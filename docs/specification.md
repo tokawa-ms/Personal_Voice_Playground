@@ -36,7 +36,7 @@
 ### 2. Personal Voice 管理（左側パネル）
 
 #### 2.1 既存の Personal Voice リスト表示
-- **API エンドポイント**: `/speaker-recognition/profiles`
+- **API エンドポイント**: `GET /customvoice/personalvoices?api-version=2024-02-01-preview`
 - **機能**:
   - Personal Voice の一覧表示（カード形式）
   - 各 Voice の情報表示（名前、ID、ロケール）
@@ -45,33 +45,40 @@
 
 #### 2.2 Personal Voice 新規作成
 
+> **注意**: すべての Personal Voice API には `api-version=2024-02-01-preview` パラメータが必要です。
+> プロジェクト、同意書、Personal Voice には一意の ID を指定する必要があります。
+
 ##### ステップ 1: プロジェクト作成
-- **API エンドポイント**: `POST /speechapi/tts/projects`
+- **API エンドポイント**: `PUT /customvoice/projects/{ProjectId}?api-version=2024-02-01-preview`
 - **入力項目**:
   - プロジェクト名（必須）
   - プロジェクト説明（任意）
 - **出力**: プロジェクト ID
 
 ##### ステップ 2: 同意書アップロード
-- **API エンドポイント**: `POST /speechapi/tts/projects/{projectId}/consents`
+- **API エンドポイント**: `POST /customvoice/consents/{ConsentId}?api-version=2024-02-01-preview`
 - **入力項目**:
   - 同意書音声ファイル（WAV 形式、必須）
+  - 話者名（voiceTalentName）
+  - 会社名（companyName）
+  - ロケール（locale）
 - **機能**:
   - ファイル選択 UI
-  - Base64 エンコーディング
+  - マルチパート形式でのアップロード
   - アップロード進捗表示
 - **出力**: 同意書 ID
 
 ##### ステップ 3: 学習用音声アップロード
-- **API エンドポイント**: `POST /speechapi/tts/projects/{projectId}/speakers`
+- **API エンドポイント**: `POST /customvoice/personalvoices/{PersonalVoiceId}?api-version=2024-02-01-preview`
 - **入力項目**:
   - 音声ファイル（WAV 形式、必須）
-  - 話者名（必須）
+  - プロジェクト ID
+  - 同意書 ID
 - **機能**:
   - ファイル選択 UI
-  - Base64 エンコーディング
+  - マルチパート形式でのアップロード
   - アップロード進捗表示
-- **出力**: 話者プロファイル ID
+- **出力**: 話者プロファイル ID（speakerProfileId）
 
 ### 3. 音声合成テスト（右側パネル）
 
@@ -89,9 +96,11 @@
 - **テキスト入力**: 複数行テキストエリア
 
 #### 3.2 音声合成実行
-- **API エンドポイント**: `POST /cognitiveservices/v1`
+- **API エンドポイント**: `POST /cognitiveservices/v1` (TTS エンドポイント)
 - **機能**:
   - SSML 形式での音声合成リクエスト
+  - `speakerProfileId` を使用した Personal Voice 指定
+  - Base model voice name（DragonLatestNeural または PhoenixLatestNeural）の指定
   - 合成進捗表示
   - エラーハンドリング
 
