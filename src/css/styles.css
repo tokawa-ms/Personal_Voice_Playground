@@ -1,0 +1,117 @@
+/* Azure Personal Voice Playground - カスタムスタイル */
+
+/* 
+ * このファイルには Tailwind CSS でカバーできない追加のスタイルを定義します
+ * 主に Tailwind CSS の CDN 版を使用しているため、カスタムアニメーションなどをここに記述します
+ */
+
+/* スムーズなトランジション */
+* {
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* フォーカス時のアウトライン */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* 選択テキストのスタイル */
+::selection {
+    background-color: #3b82f6;
+    color: white;
+}
+
+/* ボタンのホバーエフェクト強化 */
+button {
+    transition: all 0.2s ease-in-out;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* カードのホバーエフェクト */
+.hover\:bg-gray-50:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* ファイル入力のスタイル改善 */
+input[type="file"] {
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    padding: 8px 16px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #2563eb;
+}
+
+/* 無効化されたボタンのスタイル */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    transform: none;
+}
+
+/* オーディオプレイヤーのスタイル改善 */
+audio {
+    outline: none;
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: #f3f4f6;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 640px) {
+    /* モバイルでのパディング調整 */
+    .max-w-7xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* プリント時のスタイル */
+@media print {
+    #connectionPanel,
+    button {
+        display: none;
+    }
+}
