@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Personal Voice Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* カスタムスタイル */
+        .connection-panel-collapsed {
+            max-height: 60px;
+            overflow: hidden;
+        }
+        .connection-panel-expanded {
+            max-height: 500px;
+        }
+        .loading {
+            border-top-color: #3b82f6;
+            animation: spinner 1s linear infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 接続設定パネル（最上部） -->
+    <div id="connectionPanel" class="bg-white shadow-md transition-all duration-300 connection-panel-expanded">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Azure Speech Service 接続設定</h2>
+                <button id="toggleConnectionPanel" class="hidden px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    表示
+                </button>
+            </div>
+            
+            <div id="connectionForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="subscriptionKey" class="block text-sm font-medium text-gray-700 mb-2">
+                            サブスクリプションキー *
+                        </label>
+                        <input 
+                            type="password" 
+                            id="subscriptionKey" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Azure Speech Service のサブスクリプションキーを入力してください"
+                        >
+                    </div>
+                    <div>
+                        <label for="serviceRegion" class="block text-sm font-medium text-gray-700 mb-2">
+                            サービスリージョン *
+                        </label>
+                        <input 
+                            type="text" 
+                            id="serviceRegion" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="例: eastus, westeurope など"
+                        >
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <button 
+                        id="connectButton" 
+                        class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    >
+                        接続
+                    </button>
+                    <div id="connectionStatus" class="text-sm text-gray-600"></div>
+                    <div id="connectionSpinner" class="hidden w-5 h-5 border-4 border-gray-200 rounded-full loading"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツエリア -->
+    <div id="mainContent" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 min-h-[calc(100vh-200px)]">
+            
+            <!-- 左側パネル: Personal Voice 管理 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Personal Voice 管理</h2>
+                
+                <!-- タブナビゲーション -->
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="flex space-x-4">
+                        <button 
+                            id="listTab" 
+                            class="tab-button px-4 py-2 border-b-2 border-blue-500 text-blue-600 font-medium"
+                        >
+                            既存の Voice
+                        </button>
+                        <button 
+                            id="createTab" 
+                            class="tab-button px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium"
+                        >
+                            新規作成
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- 既存の Personal Voice リスト -->
+                <div id="listPanel" class="tab-panel">
+                    <div class="mb-4">
+                        <button 
+                            id="refreshVoicesButton" 
+                            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        >
+                            リストを更新
+                        </button>
+                    </div>
+                    <div id="voiceListSpinner" class="hidden flex justify-center py-8">
+                        <div class="w-8 h-8 border-4 border-gray-200 rounded-full loading"></div>
+                    </div>
+                    <div id="voiceList" class="space-y-3 max-h-[500px] overflow-y-auto">
+                        <!-- Personal Voice のリストがここに表示されます -->
+                    </div>
+                </div>
+
+                <!-- 新規作成パネル -->
+                <div id="createPanel" class="tab-panel hidden">
+                    <div class="space-y-6">
+                        <!-- ステップ 1: プロジェクト作成 -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 1: プロジェクト作成</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="projectName" class="block text-sm font-medium text-gray-700 mb-2">
+                                        プロジェクト名 *
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="projectName" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="プロジェクト名を入力してください"
+                                    >
+                                </div>
+                                <div>
+                                    <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                                        プロジェクト説明
+                                    </label>
+                                    <textarea 
+                                        id="projectDescription" 
+                                        rows="3"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="プロジェクトの説明を入力してください"
+                                    ></textarea>
+                                </div>
+                                <button 
+                                    id="createProjectButton" 
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                >
+                                    プロジェクトを作成
+                                </button>
+                                <div id="projectStatus" class="text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- ステップ 2: 同意書アップロード -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 2: 同意書アップロード</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="consentFile" class="block text-sm font-medium text-gray-700 mb-2">
+                                        同意書ファイル (WAV) *
+                                    </label>
+                                    <input 
+                                        type="file" 
+                                        id="consentFile" 
+                                        accept=".wav"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    >
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        話者の同意を記録した音声ファイル（WAV形式）をアップロードしてください
+                                    </p>
+                                </div>
+                                <button 
+                                    id="uploadConsentButton" 
+                                    class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    disabled
+                                >
+                                    同意書をアップロード
+                                </button>
+                                <div id="consentStatus" class="text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- ステップ 3: 音声アップロード -->
+                        <div class="border rounded-lg p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 3: 学習用音声アップロード</h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <label for="voiceFile" class="block text-sm font-medium text-gray-700 mb-2">
+                                        音声ファイル (WAV) *
+                                    </label>
+                                    <input 
+                                        type="file" 
+                                        id="voiceFile" 
+                                        accept=".wav"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                    >
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        話者プロファイル作成用の音声ファイル（WAV形式）をアップロードしてください
+                                    </p>
+                                </div>
+                                <div>
+                                    <label for="speakerName" class="block text-sm font-medium text-gray-700 mb-2">
+                                        話者名 *
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="speakerName" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="話者の名前を入力してください"
+                                    >
+                                </div>
+                                <button 
+                                    id="uploadVoiceButton" 
+                                    class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                                    disabled
+                                >
+                                    音声をアップロード
+                                </button>
+                                <div id="voiceStatus" class="text-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側パネル: 音声合成テスト -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">音声合成テスト</h2>
+                
+                <div class="space-y-6">
+                    <!-- Personal Voice 選択 -->
+                    <div>
+                        <label for="selectedVoice" class="block text-sm font-medium text-gray-700 mb-2">
+                            Personal Voice を選択 *
+                        </label>
+                        <select 
+                            id="selectedVoice" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">-- Personal Voice を選択してください --</option>
+                        </select>
+                    </div>
+
+                    <!-- 言語選択 -->
+                    <div>
+                        <label for="selectedLanguage" class="block text-sm font-medium text-gray-700 mb-2">
+                            言語を選択 *
+                        </label>
+                        <select 
+                            id="selectedLanguage" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="ja-JP">日本語 (ja-JP)</option>
+                            <option value="en-US">英語 (en-US)</option>
+                            <option value="zh-CN">中国語 (zh-CN)</option>
+                            <option value="ko-KR">韓国語 (ko-KR)</option>
+                            <option value="de-DE">ドイツ語 (de-DE)</option>
+                            <option value="fr-FR">フランス語 (fr-FR)</option>
+                            <option value="es-ES">スペイン語 (es-ES)</option>
+                            <option value="it-IT">イタリア語 (it-IT)</option>
+                        </select>
+                    </div>
+
+                    <!-- テキスト入力 -->
+                    <div>
+                        <label for="synthesisText" class="block text-sm font-medium text-gray-700 mb-2">
+                            合成するテキスト *
+                        </label>
+                        <textarea 
+                            id="synthesisText" 
+                            rows="6"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="音声合成したいテキストを入力してください"
+                        ></textarea>
+                    </div>
+
+                    <!-- 合成ボタン -->
+                    <div class="flex items-center space-x-4">
+                        <button 
+                            id="synthesizeButton" 
+                            class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                            音声合成を実行
+                        </button>
+                        <div id="synthesisSpinner" class="hidden w-5 h-5 border-4 border-gray-200 rounded-full loading"></div>
+                    </div>
+                    
+                    <div id="synthesisStatus" class="text-sm"></div>
+
+                    <!-- 音声プレイヤー -->
+                    <div id="audioPlayerContainer" class="hidden">
+                        <div class="border rounded-lg p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3">合成された音声</h3>
+                            <audio id="audioPlayer" controls class="w-full">
+                                <source id="audioSource" type="audio/wav">
+                                Your browser does not support the audio element.
+                            </audio>
+                            <button 
+                                id="downloadAudioButton" 
+                                class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                                音声をダウンロード
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 通知トースト -->
+    <div id="toast" class="hidden fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>
