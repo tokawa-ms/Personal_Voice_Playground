@@ -236,23 +236,42 @@ function createVoiceCard(voice) {
     const voiceId = voice.profileId || voice.id || 'unknown';
     const voiceName = voice.name || voice.locale || voiceId;
     
-    card.innerHTML = `
-        <div class="flex justify-between items-start">
-            <div>
-                <h4 class="font-semibold text-gray-800">${voiceName}</h4>
-                <p class="text-sm text-gray-600">ID: ${voiceId}</p>
-                ${voice.locale ? `<p class="text-xs text-gray-500">ロケール: ${voice.locale}</p>` : ''}
-            </div>
-            <button class="select-voice-btn px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600" data-voice-id="${voiceId}">
-                選択
-            </button>
-        </div>
-    `;
+    // XSS 対策: DOM 操作で安全に要素を作成
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'flex justify-between items-start';
     
-    card.querySelector('.select-voice-btn').addEventListener('click', (e) => {
+    const infoDiv = document.createElement('div');
+    
+    const nameHeading = document.createElement('h4');
+    nameHeading.className = 'font-semibold text-gray-800';
+    nameHeading.textContent = voiceName;
+    
+    const idParagraph = document.createElement('p');
+    idParagraph.className = 'text-sm text-gray-600';
+    idParagraph.textContent = `ID: ${voiceId}`;
+    
+    infoDiv.appendChild(nameHeading);
+    infoDiv.appendChild(idParagraph);
+    
+    if (voice.locale) {
+        const localeParagraph = document.createElement('p');
+        localeParagraph.className = 'text-xs text-gray-500';
+        localeParagraph.textContent = `ロケール: ${voice.locale}`;
+        infoDiv.appendChild(localeParagraph);
+    }
+    
+    const selectButton = document.createElement('button');
+    selectButton.className = 'select-voice-btn px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600';
+    selectButton.textContent = '選択';
+    selectButton.setAttribute('data-voice-id', voiceId);
+    selectButton.addEventListener('click', (e) => {
         e.stopPropagation();
         selectVoiceForSynthesis(voiceId);
     });
+    
+    contentDiv.appendChild(infoDiv);
+    contentDiv.appendChild(selectButton);
+    card.appendChild(contentDiv);
     
     return card;
 }
@@ -264,8 +283,14 @@ function selectVoiceForSynthesis(voiceId) {
     selector.value = voiceId;
     showToast('Personal Voice を選択しました', 'success');
     
-    // 右側パネルにスクロール
-    document.querySelector('.lg\\:grid-cols-2').children[1].scrollIntoView({ behavior: 'smooth' });
+    // 右側パネルにスクロール（安全な方法で）
+    const rightPanel = document.getElementById('mainContent');
+    if (rightPanel) {
+        const synthesisPanel = rightPanel.querySelector('.lg\\:grid-cols-2');
+        if (synthesisPanel && synthesisPanel.children.length > 1) {
+            synthesisPanel.children[1].scrollIntoView({ behavior: 'smooth' });
+        }
+    }
 }
 
 // Voice セレクターの更新
@@ -579,10 +604,11 @@ async function synthesizeSpeech() {
     }
 }
 
-// 音声ダウンロード（ボタンに動的に設定されるため、この関数は使用されない）
+// 音声ダウンロード機能は synthesizeSpeech 内で動的に設定されます
+// この関数は現在使用されていません
 function downloadAudio() {
-    // この関数は synthesizeSpeech 内で動的に設定されるため、ここでは空
     console.log('音声ダウンロード機能は synthesizeSpeech 内で動的に設定されます');
+    // 動的に設定されるため、この関数は呼ばれません
 }
 
 // ユーティリティ関数
@@ -603,6 +629,11 @@ function fileToBase64(file) {
 // スピナー表示の制御
 function showSpinner(spinnerId, show) {
     const spinner = document.getElementById(spinnerId);
+    if (!spinner) {
+        console.warn(`スピナー要素が見つかりません: ${spinnerId}`);
+        return;
+    }
+    
     if (show) {
         spinner.classList.remove('hidden');
     } else {
@@ -613,6 +644,11 @@ function showSpinner(spinnerId, show) {
 // ステータス表示の更新
 function updateStatus(statusId, message, type = 'info') {
     const statusElement = document.getElementById(statusId);
+    if (!statusElement) {
+        console.warn(`ステータス要素が見つかりません: ${statusId}`);
+        return;
+    }
+    
     statusElement.textContent = message;
     
     // スタイルをリセット
