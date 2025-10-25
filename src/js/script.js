@@ -13,6 +13,12 @@ let currentConsentId = null;
 let currentPersonalVoiceId = null;
 let voices = [];
 
+// localStorage のキー
+const STORAGE_KEYS = {
+    SUBSCRIPTION_KEY: 'azureSpeech_subscriptionKey',
+    SERVICE_REGION: 'azureSpeech_serviceRegion'
+};
+
 // ユニークな ID を生成するヘルパー関数
 function generateUniqueId(prefix = '') {
     const timestamp = Date.now();
@@ -24,6 +30,7 @@ function generateUniqueId(prefix = '') {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('アプリケーションを初期化しています...');
     initializeEventListeners();
+    loadSavedSettings();
     console.log('イベントリスナーの初期化が完了しました');
 });
 
@@ -52,6 +59,51 @@ function initializeEventListeners() {
     document.getElementById('downloadAudioButton').addEventListener('click', downloadAudio);
     
     console.log('すべてのイベントリスナーが設定されました');
+}
+
+// 保存された設定を読み込む
+function loadSavedSettings() {
+    console.log('保存された設定を読み込んでいます...');
+    
+    try {
+        const savedSubscriptionKey = localStorage.getItem(STORAGE_KEYS.SUBSCRIPTION_KEY);
+        const savedServiceRegion = localStorage.getItem(STORAGE_KEYS.SERVICE_REGION);
+        
+        if (savedSubscriptionKey && savedServiceRegion) {
+            console.log('保存された設定が見つかりました');
+            console.log(`リージョン: ${savedServiceRegion}`);
+            
+            // フィールドに値を設定
+            document.getElementById('subscriptionKey').value = savedSubscriptionKey;
+            document.getElementById('serviceRegion').value = savedServiceRegion;
+            
+            // 接続パネルを閉じる
+            collapseConnectionPanel();
+            
+            console.log('保存された設定をフィールドに設定し、接続パネルを閉じました');
+        } else {
+            console.log('保存された設定が見つかりません。接続パネルを開いた状態にします');
+            // 接続パネルは開いたまま（デフォルト状態）
+        }
+    } catch (error) {
+        console.error('設定の読み込みエラー:', error);
+        console.log('エラーが発生しましたが、接続パネルは開いた状態を維持します');
+    }
+}
+
+// 設定を保存する
+function saveSettings(subscriptionKey, serviceRegion) {
+    console.log('設定をブラウザキャッシュに保存しています...');
+    
+    try {
+        localStorage.setItem(STORAGE_KEYS.SUBSCRIPTION_KEY, subscriptionKey);
+        localStorage.setItem(STORAGE_KEYS.SERVICE_REGION, serviceRegion);
+        console.log('設定の保存に成功しました');
+        console.log(`保存したリージョン: ${serviceRegion}`);
+    } catch (error) {
+        console.error('設定の保存エラー:', error);
+        console.log('設定の保存に失敗しましたが、アプリケーションは動作を継続します');
+    }
 }
 
 // 接続処理
@@ -93,6 +145,9 @@ async function handleConnect() {
             console.log('Azure Speech Service への接続に成功しました');
             updateStatus('connectionStatus', '接続成功！', 'success');
             showToast('Azure Speech Service に接続しました', 'success');
+            
+            // 設定をブラウザキャッシュに保存
+            saveSettings(subscriptionKey, serviceRegion);
             
             // 接続パネルを閉じてメインコンテンツを表示
             setTimeout(() => {
