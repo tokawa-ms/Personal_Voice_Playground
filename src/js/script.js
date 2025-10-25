@@ -10,7 +10,15 @@ let config = {
 
 let currentProjectId = null;
 let currentConsentId = null;
+let currentPersonalVoiceId = null;
 let voices = [];
+
+// ユニークな ID を生成するヘルパー関数
+function generateUniqueId(prefix = '') {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 9);
+    return prefix ? `${prefix}-${timestamp}-${random}` : `${timestamp}-${random}`;
+}
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
@@ -69,7 +77,7 @@ async function handleConnect() {
         console.log(`リージョン: ${serviceRegion} に接続しています...`);
         // 接続テスト: プロジェクトリストの取得を試みる
         const response = await fetch(
-            `https://${serviceRegion}.api.cognitive.microsoft.com/speechapi/tts/projects`,
+            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=2024-02-01-preview`,
             {
                 method: 'GET',
                 headers: {
@@ -183,7 +191,7 @@ async function refreshVoiceList() {
     try {
         console.log('話者プロファイルを取得しています...');
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/speaker-recognition/profiles`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices?api-version=2024-02-01-preview`,
             {
                 method: 'GET',
                 headers: {
@@ -233,8 +241,8 @@ function createVoiceCard(voice) {
     const card = document.createElement('div');
     card.className = 'border border-gray-200 rounded-lg p-4 hover:bg-gray-50 cursor-pointer';
     
-    const voiceId = voice.profileId || voice.id || 'unknown';
-    const voiceName = voice.name || voice.locale || voiceId;
+    const voiceId = voice.speakerProfileId || voice.id || 'unknown';
+    const voiceName = voice.id || voice.name || voiceId;
     
     // XSS 対策: DOM 操作で安全に要素を作成
     const contentDiv = document.createElement('div');
@@ -248,16 +256,16 @@ function createVoiceCard(voice) {
     
     const idParagraph = document.createElement('p');
     idParagraph.className = 'text-sm text-gray-600';
-    idParagraph.textContent = `ID: ${voiceId}`;
+    idParagraph.textContent = `Speaker Profile ID: ${voiceId}`;
     
     infoDiv.appendChild(nameHeading);
     infoDiv.appendChild(idParagraph);
     
-    if (voice.locale) {
-        const localeParagraph = document.createElement('p');
-        localeParagraph.className = 'text-xs text-gray-500';
-        localeParagraph.textContent = `ロケール: ${voice.locale}`;
-        infoDiv.appendChild(localeParagraph);
+    if (voice.status) {
+        const statusParagraph = document.createElement('p');
+        statusParagraph.className = 'text-xs text-gray-500';
+        statusParagraph.textContent = `ステータス: ${voice.status}`;
+        infoDiv.appendChild(statusParagraph);
     }
     
     const selectButton = document.createElement('button');
@@ -304,8 +312,8 @@ function updateVoiceSelector() {
     
     voices.forEach(voice => {
         const option = document.createElement('option');
-        const voiceId = voice.profileId || voice.id || 'unknown';
-        const voiceName = voice.name || voice.locale || voiceId;
+        const voiceId = voice.speakerProfileId || voice.id || 'unknown';
+        const voiceName = voice.id || voice.name || voiceId;
         option.value = voiceId;
         option.textContent = voiceName;
         selector.appendChild(option);
@@ -335,19 +343,21 @@ async function createProject() {
     updateStatus('projectStatus', 'プロジェクトを作成中...', 'info');
     
     try {
-        console.log(`プロジェクト "${projectName}" を作成しています...`);
+        // 一意のプロジェクト ID を生成
+        currentProjectId = generateUniqueId('project');
+        console.log(`プロジェクト "${projectName}" を作成しています... (ID: ${currentProjectId})`);
+        
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/speechapi/tts/projects`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/projects/${currentProjectId}?api-version=2024-02-01-preview`,
             {
-                method: 'POST',
+                method: 'PUT',
                 headers: {
                     'Ocp-Apim-Subscription-Key': config.subscriptionKey,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: projectName,
-                    description: projectDescription || 'Personal Voice プロジェクト',
-                    locale: 'ja-JP'
+                    description: projectDescription || projectName,
+                    kind: 'PersonalVoice'
                 })
             }
         );
@@ -356,8 +366,7 @@ async function createProject() {
         
         if (response.ok) {
             const project = await response.json();
-            currentProjectId = project.id;
-            console.log(`プロジェクトを作成しました: ${currentProjectId}`);
+            console.log('プロジェクトを作成しました:', project);
             updateStatus('projectStatus', `プロジェクト作成成功！ ID: ${currentProjectId}`, 'success');
             showToast('プロジェクトを作成しました', 'success');
             
@@ -370,6 +379,7 @@ async function createProject() {
         }
     } catch (error) {
         console.error('プロジェクト作成エラー:', error);
+        currentProjectId = null;
         updateStatus('projectStatus', 'プロジェクト作成に失敗しました', 'error');
         showToast('プロジェクトの作成に失敗しました', 'error');
     }
@@ -396,23 +406,26 @@ async function uploadConsent() {
     updateStatus('consentStatus', '同意書をアップロード中...', 'info');
     
     try {
-        console.log(`同意書ファイル "${consentFile.name}" をアップロードしています...`);
+        // 一意の同意書 ID を生成
+        currentConsentId = generateUniqueId('consent');
+        console.log(`同意書ファイル "${consentFile.name}" をアップロードしています... (ID: ${currentConsentId})`);
         
-        // ファイルを Base64 に変換
-        const audioData = await fileToBase64(consentFile);
+        // FormData を使用してマルチパートリクエストを構築
+        const formData = new FormData();
+        formData.append('projectId', currentProjectId);
+        formData.append('voiceTalentName', document.getElementById('projectName').value.trim() || 'Speaker');
+        formData.append('companyName', 'Personal Voice User');
+        formData.append('audiodata', consentFile);
+        formData.append('locale', 'ja-JP');
         
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/speechapi/tts/projects/${currentProjectId}/consents`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/consents/${currentConsentId}?api-version=2024-02-01-preview`,
             {
                 method: 'POST',
                 headers: {
-                    'Ocp-Apim-Subscription-Key': config.subscriptionKey,
-                    'Content-Type': 'application/json'
+                    'Ocp-Apim-Subscription-Key': config.subscriptionKey
                 },
-                body: JSON.stringify({
-                    audiodata: audioData,
-                    locale: 'ja-JP'
-                })
+                body: formData
             }
         );
         
@@ -420,8 +433,7 @@ async function uploadConsent() {
         
         if (response.ok) {
             const consent = await response.json();
-            currentConsentId = consent.id;
-            console.log(`同意書をアップロードしました: ${currentConsentId}`);
+            console.log('同意書をアップロードしました:', consent);
             updateStatus('consentStatus', `同意書アップロード成功！ ID: ${currentConsentId}`, 'success');
             showToast('同意書をアップロードしました', 'success');
             
@@ -434,6 +446,7 @@ async function uploadConsent() {
         }
     } catch (error) {
         console.error('同意書アップロードエラー:', error);
+        currentConsentId = null;
         updateStatus('consentStatus', '同意書アップロードに失敗しました', 'error');
         showToast('同意書のアップロードに失敗しました', 'error');
     }
@@ -467,34 +480,34 @@ async function uploadVoice() {
     updateStatus('voiceStatus', '音声をアップロード中...', 'info');
     
     try {
-        console.log(`音声ファイル "${voiceFile.name}" をアップロードしています...`);
+        // 一意の Personal Voice ID を生成
+        currentPersonalVoiceId = generateUniqueId('personalvoice');
+        console.log(`音声ファイル "${voiceFile.name}" をアップロードしています... (ID: ${currentPersonalVoiceId})`);
         
-        // ファイルを Base64 に変換
-        const audioData = await fileToBase64(voiceFile);
+        // FormData を使用してマルチパートリクエストを構築
+        const formData = new FormData();
+        formData.append('projectId', currentProjectId);
+        formData.append('consentId', currentConsentId);
+        formData.append('audiodata', voiceFile);
         
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/speechapi/tts/projects/${currentProjectId}/speakers`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices/${currentPersonalVoiceId}?api-version=2024-02-01-preview`,
             {
                 method: 'POST',
                 headers: {
-                    'Ocp-Apim-Subscription-Key': config.subscriptionKey,
-                    'Content-Type': 'application/json'
+                    'Ocp-Apim-Subscription-Key': config.subscriptionKey
                 },
-                body: JSON.stringify({
-                    name: speakerName,
-                    audiodata: audioData,
-                    consentId: currentConsentId,
-                    locale: 'ja-JP'
-                })
+                body: formData
             }
         );
         
         console.log(`音声アップロードのレスポンスステータス: ${response.status}`);
         
         if (response.ok) {
-            const speaker = await response.json();
-            console.log('話者プロファイルを作成しました:', speaker);
-            updateStatus('voiceStatus', `音声アップロード成功！話者プロファイル ID: ${speaker.id || 'processing'}`, 'success');
+            const personalVoice = await response.json();
+            console.log('Personal Voice を作成しました:', personalVoice);
+            const speakerProfileId = personalVoice.speakerProfileId || 'processing';
+            updateStatus('voiceStatus', `音声アップロード成功！Speaker Profile ID: ${speakerProfileId}`, 'success');
             showToast('音声をアップロードしました。処理が完了するまでお待ちください', 'success');
             
             // リストを更新
@@ -508,6 +521,7 @@ async function uploadVoice() {
         }
     } catch (error) {
         console.error('音声アップロードエラー:', error);
+        currentPersonalVoiceId = null;
         updateStatus('voiceStatus', '音声アップロードに失敗しました', 'error');
         showToast('音声のアップロードに失敗しました', 'error');
     }
@@ -537,14 +551,16 @@ async function synthesizeSpeech() {
     updateStatus('synthesisStatus', '音声を合成中...', 'info');
     
     try {
-        console.log(`Personal Voice "${selectedVoice}" で音声合成を実行しています...`);
+        console.log(`Personal Voice (Speaker Profile ID: ${selectedVoice}) で音声合成を実行しています...`);
         console.log(`言語: ${selectedLanguage}, テキスト: ${synthesisText.substring(0, 50)}...`);
         
-        // SSML を構築
+        // SSML を構築 - Personal Voice には speakerProfileId と base model voice name が必要
         const ssml = `
-            <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${selectedLanguage}">
-                <voice name="${selectedVoice}">
-                    ${synthesisText}
+            <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="${selectedLanguage}">
+                <voice name="DragonLatestNeural">
+                    <mstts:ttsembedding speakerProfileId="${selectedVoice}">
+                        ${synthesisText}
+                    </mstts:ttsembedding>
                 </voice>
             </speak>
         `;
