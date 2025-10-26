@@ -23,7 +23,8 @@ const STORAGE_KEYS = {
 const API_CONFIG = {
     VERSION: '2024-02-01-preview',
     AUTO_CONNECT_DELAY: 1000, // メインコンテンツ表示前の遅延時間（ミリ秒）
-    DEFAULT_PROJECT_ID_PREFIX: 'project' // デフォルトのプロジェクトIDプレフィックス
+    DEFAULT_PROJECT_ID_PREFIX: 'project', // デフォルトのプロジェクトIDプレフィックス
+    DEFAULT_VOICE_ID_PREFIX: 'personalvoice' // デフォルトのVoice IDプレフィックス
 };
 
 // ユニークな ID を生成するヘルパー関数
@@ -615,6 +616,8 @@ async function uploadConsent() {
 async function uploadVoice() {
     console.log('学習用音声をアップロードしています...');
     
+    const voiceIdPrefixElement = document.getElementById('voiceIdPrefix');
+    const voiceIdPrefix = voiceIdPrefixElement ? voiceIdPrefixElement.value.trim() : '';
     const voiceFile = document.getElementById('voiceFile').files[0];
     
     if (!voiceFile) {
@@ -632,9 +635,11 @@ async function uploadVoice() {
     updateStatus('voiceStatus', '音声をアップロード中...', 'info');
     
     try {
-        // 一意の Personal Voice ID を生成
-        currentPersonalVoiceId = generateUniqueId('personalvoice');
+        // 一意の Personal Voice ID を生成（カスタムプレフィックスを使用）
+        const prefix = voiceIdPrefix || API_CONFIG.DEFAULT_VOICE_ID_PREFIX;
+        currentPersonalVoiceId = generateUniqueId(prefix);
         console.log(`音声ファイル "${voiceFile.name}" をアップロードしています... (ID: ${currentPersonalVoiceId})`);
+        console.log(`使用した Voice ID プレフィックス: ${prefix}`);
         
         // FormData を使用してマルチパートリクエストを構築
         const formData = new FormData();
