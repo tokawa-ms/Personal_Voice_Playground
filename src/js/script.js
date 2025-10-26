@@ -167,8 +167,7 @@ async function handleConnect() {
                 refreshVoiceList();
             }, 1000);
         } else {
-            const errorText = await response.text();
-            console.error('接続に失敗しました:', errorText);
+            console.error(`接続に失敗しました: ${response.status} ${response.statusText}`);
             throw new Error(`接続に失敗しました: ${response.status} ${response.statusText}`);
         }
     } catch (error) {
