@@ -51,9 +51,11 @@
 ##### ステップ 1: プロジェクト作成
 - **API エンドポイント**: `PUT /customvoice/projects/{ProjectId}?api-version=2024-02-01-preview`
 - **入力項目**:
+  - プロジェクト ID プレフィックス（任意、デフォルト: "project"）
   - プロジェクト名（必須）
   - プロジェクト説明（任意）
 - **出力**: プロジェクト ID
+- **プロジェクト ID の生成**: `{プレフィックス}-{タイムスタンプ}-{ランダム文字列}`
 
 ##### ステップ 2: 同意書アップロード
 - **API エンドポイント**: `POST /customvoice/consents/{ConsentId}?api-version=2024-02-01-preview`
