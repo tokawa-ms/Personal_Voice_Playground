@@ -235,6 +235,21 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 3: 学習用音声アップロード</h3>
                             <div class="space-y-3">
                                 <div>
+                                    <label for="voiceIdPrefix" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Voice ID プレフィックス
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="voiceIdPrefix" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Voice ID のプレフィックスを入力してください"
+                                        value="personalvoice"
+                                    >
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Voice ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）。ここで設定した値を含む Voice 名が Voice List 時に表示されます。
+                                    </p>
+                                </div>
+                                <div>
                                     <label for="voiceFile" class="block text-sm font-medium text-gray-700 mb-2">
                                         音声ファイル (WAV) *
                                     </label>
