@@ -127,6 +127,21 @@
                             <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 1: プロジェクト作成</h3>
                             <div class="space-y-3">
                                 <div>
+                                    <label for="projectIdPrefix" class="block text-sm font-medium text-gray-700 mb-2">
+                                        プロジェクト ID プレフィックス
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="projectIdPrefix" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="プロジェクト ID のプレフィックスを入力してください"
+                                        value="project"
+                                    >
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        プロジェクト ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）
+                                    </p>
+                                </div>
+                                <div>
                                     <label for="projectName" class="block text-sm font-medium text-gray-700 mb-2">
                                         プロジェクト名 *
                                     </label>

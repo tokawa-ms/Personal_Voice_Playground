@@ -470,6 +470,7 @@ function updateVoiceSelector() {
 async function createProject() {
     console.log('新規プロジェクトを作成しています...');
     
+    const projectIdPrefix = document.getElementById('projectIdPrefix').value.trim();
     const projectName = document.getElementById('projectName').value.trim();
     const projectDescription = document.getElementById('projectDescription').value.trim();
     
@@ -482,9 +483,10 @@ async function createProject() {
     updateStatus('projectStatus', 'プロジェクトを作成中...', 'info');
     
     try {
-        // 一意のプロジェクト ID を生成
-        currentProjectId = generateUniqueId('project');
+        // 一意のプロジェクト ID を生成（カスタムプレフィックスを使用）
+        currentProjectId = generateUniqueId(projectIdPrefix || 'project');
         console.log(`プロジェクト "${projectName}" を作成しています... (ID: ${currentProjectId})`);
+        console.log(`使用したプレフィックス: ${projectIdPrefix || 'project'}`);
         
         const response = await fetch(
             `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/projects/${currentProjectId}?api-version=${API_CONFIG.VERSION}`,
