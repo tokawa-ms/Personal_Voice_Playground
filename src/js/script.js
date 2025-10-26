@@ -445,10 +445,24 @@ async function uploadConsent() {
     console.log('同意書をアップロードしています...');
     
     const consentFile = document.getElementById('consentFile').files[0];
+    const voiceTalentName = document.getElementById('voiceTalentName').value.trim();
+    const companyName = document.getElementById('companyName').value.trim();
     
     if (!consentFile) {
         console.error('同意書ファイルが選択されていません');
         showToast('同意書ファイルを選択してください', 'error');
+        return;
+    }
+    
+    if (!voiceTalentName) {
+        console.error('話者名が入力されていません');
+        showToast('話者名を入力してください', 'error');
+        return;
+    }
+    
+    if (!companyName) {
+        console.error('会社名が入力されていません');
+        showToast('会社名を入力してください', 'error');
         return;
     }
     
@@ -464,12 +478,13 @@ async function uploadConsent() {
         // 一意の同意書 ID を生成
         currentConsentId = generateUniqueId('consent');
         console.log(`同意書ファイル "${consentFile.name}" をアップロードしています... (ID: ${currentConsentId})`);
+        console.log(`話者名: ${voiceTalentName}, 会社名: ${companyName}`);
         
         // FormData を使用してマルチパートリクエストを構築
         const formData = new FormData();
         formData.append('projectId', currentProjectId);
-        formData.append('voiceTalentName', document.getElementById('projectName').value.trim() || 'Speaker');
-        formData.append('companyName', 'Personal Voice User');
+        formData.append('voiceTalentName', voiceTalentName);
+        formData.append('companyName', companyName);
         formData.append('audiodata', consentFile);
         formData.append('locale', 'ja-JP');
         
