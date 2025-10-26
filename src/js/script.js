@@ -22,7 +22,8 @@ const STORAGE_KEYS = {
 // API設定
 const API_CONFIG = {
     VERSION: '2024-02-01-preview',
-    AUTO_CONNECT_DELAY: 1000 // メインコンテンツ表示前の遅延時間（ミリ秒）
+    AUTO_CONNECT_DELAY: 1000, // メインコンテンツ表示前の遅延時間（ミリ秒）
+    DEFAULT_PROJECT_ID_PREFIX: 'project' // デフォルトのプロジェクトIDプレフィックス
 };
 
 // ユニークな ID を生成するヘルパー関数
@@ -470,7 +471,8 @@ function updateVoiceSelector() {
 async function createProject() {
     console.log('新規プロジェクトを作成しています...');
     
-    const projectIdPrefix = document.getElementById('projectIdPrefix').value.trim();
+    const projectIdPrefixElement = document.getElementById('projectIdPrefix');
+    const projectIdPrefix = projectIdPrefixElement ? projectIdPrefixElement.value.trim() : '';
     const projectName = document.getElementById('projectName').value.trim();
     const projectDescription = document.getElementById('projectDescription').value.trim();
     
@@ -484,9 +486,10 @@ async function createProject() {
     
     try {
         // 一意のプロジェクト ID を生成（カスタムプレフィックスを使用）
-        currentProjectId = generateUniqueId(projectIdPrefix || 'project');
+        const prefix = projectIdPrefix || API_CONFIG.DEFAULT_PROJECT_ID_PREFIX;
+        currentProjectId = generateUniqueId(prefix);
         console.log(`プロジェクト "${projectName}" を作成しています... (ID: ${currentProjectId})`);
-        console.log(`使用したプレフィックス: ${projectIdPrefix || 'project'}`);
+        console.log(`使用したプレフィックス: ${prefix}`);
         
         const response = await fetch(
             `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/projects/${currentProjectId}?api-version=${API_CONFIG.VERSION}`,
