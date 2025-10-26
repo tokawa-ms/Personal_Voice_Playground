@@ -527,17 +527,10 @@ async function uploadVoice() {
     console.log('学習用音声をアップロードしています...');
     
     const voiceFile = document.getElementById('voiceFile').files[0];
-    const speakerName = document.getElementById('speakerName').value.trim();
     
     if (!voiceFile) {
         console.error('音声ファイルが選択されていません');
         showToast('音声ファイルを選択してください', 'error');
-        return;
-    }
-    
-    if (!speakerName) {
-        console.error('話者名が入力されていません');
-        showToast('話者名を入力してください', 'error');
         return;
     }
     
