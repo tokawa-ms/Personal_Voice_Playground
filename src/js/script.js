@@ -19,6 +19,12 @@ const STORAGE_KEYS = {
     SERVICE_REGION: 'azureSpeech_serviceRegion'
 };
 
+// API設定
+const API_CONFIG = {
+    VERSION: '2024-02-01-preview',
+    AUTO_CONNECT_DELAY: 1000 // メインコンテンツ表示前の遅延時間（ミリ秒）
+};
+
 // ユニークな ID を生成するヘルパー関数
 function generateUniqueId(prefix = '') {
     const timestamp = Date.now();
@@ -133,7 +139,7 @@ async function handleConnect() {
         console.log(`リージョン: ${serviceRegion} に接続しています...`);
         // 接続テスト: プロジェクトリストの取得を試みる
         const response = await fetch(
-            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=2024-02-01-preview`,
+            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'GET',
                 headers: {
@@ -198,7 +204,7 @@ async function autoConnect() {
         console.log(`自動接続: リージョン ${serviceRegion} に接続しています...`);
         // 接続テスト: プロジェクトリストの取得を試みる
         const response = await fetch(
-            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=2024-02-01-preview`,
+            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'GET',
                 headers: {
@@ -220,10 +226,9 @@ async function autoConnect() {
                 document.getElementById('mainContent').classList.remove('hidden');
                 // 初期データを読み込み
                 refreshVoiceList();
-            }, 1000);
+            }, API_CONFIG.AUTO_CONNECT_DELAY);
         } else {
-            const errorText = await response.text();
-            console.error('自動接続失敗:', errorText);
+            console.error(`自動接続失敗: ${response.status} ${response.statusText}`);
             throw new Error(`自動接続に失敗しました: ${response.status} ${response.statusText}`);
         }
     } catch (error) {
@@ -326,7 +331,7 @@ async function refreshVoiceList() {
     try {
         console.log('話者プロファイルを取得しています...');
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices?api-version=2024-02-01-preview`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'GET',
                 headers: {
@@ -483,7 +488,7 @@ async function createProject() {
         console.log(`プロジェクト "${projectName}" を作成しています... (ID: ${currentProjectId})`);
         
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/projects/${currentProjectId}?api-version=2024-02-01-preview`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/projects/${currentProjectId}?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'PUT',
                 headers: {
@@ -569,7 +574,7 @@ async function uploadConsent() {
         formData.append('locale', 'ja-JP');
         
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/consents/${currentConsentId}?api-version=2024-02-01-preview`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/consents/${currentConsentId}?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'POST',
                 headers: {
@@ -634,7 +639,7 @@ async function uploadVoice() {
         formData.append('audiodata', voiceFile);
         
         const response = await fetch(
-            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices/${currentPersonalVoiceId}?api-version=2024-02-01-preview`,
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/personalvoices/${currentPersonalVoiceId}?api-version=${API_CONFIG.VERSION}`,
             {
                 method: 'POST',
                 headers: {
