@@ -81,6 +81,10 @@ function loadSavedSettings() {
             collapseConnectionPanel();
             
             console.log('保存された設定をフィールドに設定し、接続パネルを閉じました');
+            console.log('自動接続を試行します...');
+            
+            // 自動接続を試行
+            autoConnect();
         } else {
             console.log('保存された設定が見つかりません。接続パネルを開いた状態にします');
             // 接続パネルは開いたまま（デフォルト状態）
@@ -169,6 +173,82 @@ async function handleConnect() {
     } finally {
         showSpinner('connectionSpinner', false);
     }
+}
+
+// 自動接続処理
+async function autoConnect() {
+    console.log('自動接続を開始しています...');
+    
+    const subscriptionKey = document.getElementById('subscriptionKey').value.trim();
+    const serviceRegion = document.getElementById('serviceRegion').value.trim();
+    
+    if (!subscriptionKey || !serviceRegion) {
+        console.error('自動接続: サブスクリプションキーまたはサービスリージョンが入力されていません');
+        expandConnectionPanel();
+        return;
+    }
+    
+    config.subscriptionKey = subscriptionKey;
+    config.serviceRegion = serviceRegion;
+    
+    showSpinner('connectionSpinner', true);
+    updateStatus('connectionStatus', '自動接続中...', 'info');
+    
+    try {
+        console.log(`自動接続: リージョン ${serviceRegion} に接続しています...`);
+        // 接続テスト: プロジェクトリストの取得を試みる
+        const response = await fetch(
+            `https://${serviceRegion}.api.cognitive.microsoft.com/customvoice/projects?api-version=2024-02-01-preview`,
+            {
+                method: 'GET',
+                headers: {
+                    'Ocp-Apim-Subscription-Key': subscriptionKey
+                }
+            }
+        );
+        
+        console.log(`自動接続: 接続テストのレスポンスステータス: ${response.status}`);
+        
+        if (response.ok) {
+            config.isConnected = true;
+            console.log('自動接続: Azure Speech Service への接続に成功しました');
+            updateStatus('connectionStatus', '自動接続成功！', 'success');
+            showToast('保存された設定で自動接続しました', 'success');
+            
+            // メインコンテンツを表示
+            setTimeout(() => {
+                document.getElementById('mainContent').classList.remove('hidden');
+                // 初期データを読み込み
+                refreshVoiceList();
+            }, 1000);
+        } else {
+            const errorText = await response.text();
+            console.error('自動接続失敗:', errorText);
+            throw new Error(`自動接続に失敗しました: ${response.status} ${response.statusText}`);
+        }
+    } catch (error) {
+        console.error('自動接続エラー:', error);
+        config.isConnected = false;
+        updateStatus('connectionStatus', '自動接続失敗 - 手動で接続してください', 'error');
+        showToast('自動接続に失敗しました。設定を確認して手動で接続してください', 'error');
+        // 接続パネルを展開して手動接続を促す
+        expandConnectionPanel();
+    } finally {
+        showSpinner('connectionSpinner', false);
+    }
+}
+
+// 接続パネルの展開
+function expandConnectionPanel() {
+    console.log('接続パネルを展開しています...');
+    const panel = document.getElementById('connectionPanel');
+    const form = document.getElementById('connectionForm');
+    const toggleBtn = document.getElementById('toggleConnectionPanel');
+    
+    panel.classList.remove('connection-panel-collapsed');
+    panel.classList.add('connection-panel-expanded');
+    form.classList.remove('hidden');
+    toggleBtn.classList.add('hidden');
 }
 
 // 接続パネルの折りたたみ
