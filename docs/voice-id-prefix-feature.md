@@ -23,7 +23,7 @@ Personal Voice の音声をアップロードする際に、Voice ID に使用�
 - **フィールド名**: Voice ID プレフィックス
 - **デフォルト値**: `personalvoice`
 - **プレースホルダー**: Voice ID のプレフィックスを入力してください
-- **説明テキスト**: Voice ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）。ここで設定した値を含む Voice 名が Voice List 時に表示されます。
+- **説明テキスト**: Voice ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）。ここで設定した値を含む Voice 名が Voice List で表示されます。
 
 ### コードの変更
 
