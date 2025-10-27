@@ -13,6 +13,11 @@
 
 Azure Personal Voice Playground は、Azure Speech Service の Personal Voice 機能をブラウザ上で簡単にテストできるウェブアプリケーションです。サーバーセットアップ不要で、ローカル PC のブラウザから直接実行できます。
 
+## ✅ Quick Test
+以下の URL でアクセス可能なページの接続先情報に、Speech Service の接続先リージョンとアクセスキーを入力するだけで、Personal Voice の作成から合成テストまで行うことが可能です。
+
+https://tokawa-ms.github.io/Personal_Voice_Playground/src/
+
 ### ✨ 主な機能
 
 - 🎙️ **Personal Voice の作成** - 音声ファイルから独自の AI 音声を生成
