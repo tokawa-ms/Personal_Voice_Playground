@@ -195,13 +195,14 @@ Personal Voice の一覧表示と新規作成ができます。
 
 ### 同意書音声
 - **形式**: WAV（16kHz、16bit、モノラル推奨）
-- **内容例**: 「私は自分の音声を AI モデルの学習に使用することに同意します」
+- **内容**: 以下のURLにあるサンプル文例から、自分の母国語の文章を選び、自分の名前と社名を組み込んだうえで読み上げてください
+  - サンプル文例URL: https://github.com/Azure-Samples/Cognitive-Speech-TTS/blob/master/CustomVoice/script/verbal-statement-all-locales.txt
 - **長さ**: 5〜10秒程度
 
 ### 学習用音声
 - **形式**: WAV（16kHz、16bit、モノラル推奨）
 - **内容**: 話者の特徴を表す自然な発話
-- **長さ**: 30秒以上推奨
+- **長さ**: **5秒以上90秒未満**（必須）
 
 ## 🔒 セキュリティとベストプラクティス
 
@@ -535,13 +536,14 @@ Convert text to speech using created Personal Voice.
 
 ### Consent Audio
 - **Format**: WAV (16kHz, 16bit, mono recommended)
-- **Content Example**: "I consent to the use of my voice for training AI models"
+- **Content**: Please read the sample text in your native language from the URL below, incorporating your name and company name:
+  - Sample text URL: https://github.com/Azure-Samples/Cognitive-Speech-TTS/blob/master/CustomVoice/script/verbal-statement-all-locales.txt
 - **Length**: 5-10 seconds
 
 ### Training Audio
 - **Format**: WAV (16kHz, 16bit, mono recommended)
 - **Content**: Natural speech representing speaker characteristics
-- **Length**: 30+ seconds recommended
+- **Length**: **Between 5 and 90 seconds** (required)
 
 ## 🔒 Security and Best Practices
 

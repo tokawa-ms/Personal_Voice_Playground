@@ -39,7 +39,9 @@ const i18n = {
         
         step2: 'ステップ 2: 同意書アップロード',
         consentFile: '同意書ファイル (WAV) *',
-        consentFileHelp: '話者の同意を記録した音声ファイル（WAV形式）をアップロードしてください',
+        consentFileHelp: '話者の同意を記録した音声ファイル（WAV形式）をアップロードしてください。以下のURLにある文例のうち、自分の母国語の文章を、自分の名前と社名を組み込んだうえで読み上げてください：',
+        consentFileUrlLabel: 'サンプル文例URL：',
+        consentFileUrl: 'https://github.com/Azure-Samples/Cognitive-Speech-TTS/blob/master/CustomVoice/script/verbal-statement-all-locales.txt',
         voiceTalentName: '話者名 *',
         voiceTalentNamePlaceholder: '音声を提供する話者の名前を入力してください',
         voiceTalentNameHelp: '実際に音声を作る話者の名前を入力してください',
@@ -53,7 +55,7 @@ const i18n = {
         voiceIdPrefixPlaceholder: 'Voice ID のプレフィックスを入力してください',
         voiceIdPrefixHelp: 'Voice ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）。ここで設定した値を含む Voice 名が Voice List で表示されます。',
         voiceFile: '音声ファイル (WAV) *',
-        voiceFileHelp: '話者プロファイル作成用の音声ファイル（WAV形式）をアップロードしてください',
+        voiceFileHelp: '話者プロファイル作成用の音声ファイル（WAV形式）をアップロードしてください。音声の長さは5秒以上90秒未満である必要があります。',
         uploadVoice: '音声をアップロード',
         
         // 音声合成テスト
@@ -180,7 +182,9 @@ const i18n = {
         
         step2: 'Step 2: Upload Consent',
         consentFile: 'Consent File (WAV) *',
-        consentFileHelp: 'Upload an audio file (WAV format) recording the speaker\'s consent',
+        consentFileHelp: 'Upload an audio file (WAV format) recording the speaker\'s consent. Please read the sample text in your native language from the URL below, incorporating your name and company name:',
+        consentFileUrlLabel: 'Sample text URL:',
+        consentFileUrl: 'https://github.com/Azure-Samples/Cognitive-Speech-TTS/blob/master/CustomVoice/script/verbal-statement-all-locales.txt',
         voiceTalentName: 'Speaker Name *',
         voiceTalentNamePlaceholder: 'Enter the name of the voice talent',
         voiceTalentNameHelp: 'Enter the name of the actual speaker providing the voice',
@@ -194,7 +198,7 @@ const i18n = {
         voiceIdPrefixPlaceholder: 'Enter Voice ID prefix',
         voiceIdPrefixHelp: 'Specify a prefix for the Voice ID (e.g., myvoice, personalvoice). Voice names containing this prefix will be displayed in the Voice List.',
         voiceFile: 'Audio File (WAV) *',
-        voiceFileHelp: 'Upload an audio file (WAV format) for creating the speaker profile',
+        voiceFileHelp: 'Upload an audio file (WAV format) for creating the speaker profile. The audio must be between 5 and 90 seconds in length.',
         uploadVoice: 'Upload Voice',
         
         // Speech synthesis test
