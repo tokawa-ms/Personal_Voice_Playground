@@ -25,12 +25,22 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
+    <!-- 言語切り替えボタン -->
+    <div class="fixed top-4 right-4 z-50 flex space-x-2">
+        <button id="langJa" class="px-3 py-1 rounded text-sm font-medium transition-colors bg-blue-600 text-white">
+            日本語
+        </button>
+        <button id="langEn" class="px-3 py-1 rounded text-sm font-medium transition-colors bg-gray-200 text-gray-700">
+            English
+        </button>
+    </div>
+
     <!-- 接続設定パネル（最上部） -->
     <div id="connectionPanel" class="bg-white shadow-md transition-all duration-300 connection-panel-expanded">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-gray-800">Azure Speech Service 接続設定</h2>
-                <button id="toggleConnectionPanel" class="hidden px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <h2 class="text-xl font-bold text-gray-800" data-i18n="connectionSettings">Azure Speech Service 接続設定</h2>
+                <button id="toggleConnectionPanel" class="hidden px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" data-i18n="show">
                     表示
                 </button>
             </div>
@@ -38,24 +48,26 @@
             <div id="connectionForm" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="subscriptionKey" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="subscriptionKey" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="subscriptionKey">
                             サブスクリプションキー *
                         </label>
                         <input 
                             type="password" 
                             id="subscriptionKey" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            data-i18n-placeholder="subscriptionKeyPlaceholder"
                             placeholder="Azure Speech Service のサブスクリプションキーを入力してください"
                         >
                     </div>
                     <div>
-                        <label for="serviceRegion" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="serviceRegion" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="serviceRegion">
                             サービスリージョン *
                         </label>
                         <input 
                             type="text" 
                             id="serviceRegion" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            data-i18n-placeholder="serviceRegionPlaceholder"
                             placeholder="例: eastus, westeurope など"
                         >
                     </div>
@@ -65,6 +77,7 @@
                     <button 
                         id="connectButton" 
                         class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                        data-i18n="connect"
                     >
                         接続
                     </button>
@@ -81,7 +94,7 @@
             
             <!-- 左側パネル: Personal Voice 管理 -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">Personal Voice 管理</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="personalVoiceManagement">Personal Voice 管理</h2>
                 
                 <!-- タブナビゲーション -->
                 <div class="border-b border-gray-200 mb-6">
@@ -89,12 +102,14 @@
                         <button 
                             id="listTab" 
                             class="tab-button px-4 py-2 border-b-2 border-blue-500 text-blue-600 font-medium"
+                            data-i18n="existingVoices"
                         >
                             既存の Voice
                         </button>
                         <button 
                             id="createTab" 
                             class="tab-button px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 font-medium"
+                            data-i18n="createNew"
                         >
                             新規作成
                         </button>
@@ -107,6 +122,7 @@
                         <button 
                             id="refreshVoicesButton" 
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            data-i18n="refreshList"
                         >
                             リストを更新
                         </button>
@@ -124,48 +140,52 @@
                     <div class="space-y-6">
                         <!-- ステップ 1: プロジェクト作成 -->
                         <div class="border rounded-lg p-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 1: プロジェクト作成</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="step1">ステップ 1: プロジェクト作成</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <label for="projectIdPrefix" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="projectIdPrefix" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="projectIdPrefix">
                                         プロジェクト ID プレフィックス
                                     </label>
                                     <input 
                                         type="text" 
                                         id="projectIdPrefix" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="projectIdPrefixPlaceholder"
                                         placeholder="プロジェクト ID のプレフィックスを入力してください"
                                         value="project"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="projectIdPrefixHelp">
                                         プロジェクト ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）
                                     </p>
                                 </div>
                                 <div>
-                                    <label for="projectName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="projectName" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="projectName">
                                         プロジェクト名 *
                                     </label>
                                     <input 
                                         type="text" 
                                         id="projectName" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="projectNamePlaceholder"
                                         placeholder="プロジェクト名を入力してください"
                                     >
                                 </div>
                                 <div>
-                                    <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="projectDescription" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="projectDescription">
                                         プロジェクト説明
                                     </label>
                                     <textarea 
                                         id="projectDescription" 
                                         rows="3"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="projectDescriptionPlaceholder"
                                         placeholder="プロジェクトの説明を入力してください"
                                     ></textarea>
                                 </div>
                                 <button 
                                     id="createProjectButton" 
                                     class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    data-i18n="createProject"
                                 >
                                     プロジェクトを作成
                                 </button>
@@ -175,10 +195,10 @@
 
                         <!-- ステップ 2: 同意書アップロード -->
                         <div class="border rounded-lg p-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 2: 同意書アップロード</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="step2">ステップ 2: 同意書アップロード</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <label for="consentFile" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="consentFile" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="consentFile">
                                         同意書ファイル (WAV) *
                                     </label>
                                     <input 
@@ -187,41 +207,44 @@
                                         accept=".wav"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="consentFileHelp">
                                         話者の同意を記録した音声ファイル（WAV形式）をアップロードしてください
                                     </p>
                                 </div>
                                 <div>
-                                    <label for="voiceTalentName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="voiceTalentName" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="voiceTalentName">
                                         話者名 *
                                     </label>
                                     <input 
                                         type="text" 
                                         id="voiceTalentName" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="voiceTalentNamePlaceholder"
                                         placeholder="音声を提供する話者の名前を入力してください"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="voiceTalentNameHelp">
                                         実際に音声を作る話者の名前を入力してください
                                     </p>
                                 </div>
                                 <div>
-                                    <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="companyName" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="companyName">
                                         会社名 *
                                     </label>
                                     <input 
                                         type="text" 
                                         id="companyName" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="companyNamePlaceholder"
                                         placeholder="利用する会社名を入力してください"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="companyNameHelp">
                                         Personal Voiceを利用する企業名を入力してください
                                     </p>
                                 </div>
                                 <button 
                                     id="uploadConsentButton" 
                                     class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    data-i18n="uploadConsent"
                                     disabled
                                 >
                                     同意書をアップロード
@@ -232,25 +255,26 @@
 
                         <!-- ステップ 3: 音声アップロード -->
                         <div class="border rounded-lg p-4">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-4">ステップ 3: 学習用音声アップロード</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4" data-i18n="step3">ステップ 3: 学習用音声アップロード</h3>
                             <div class="space-y-3">
                                 <div>
-                                    <label for="voiceIdPrefix" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="voiceIdPrefix" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="voiceIdPrefix">
                                         Voice ID プレフィックス
                                     </label>
                                     <input 
                                         type="text" 
                                         id="voiceIdPrefix" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-i18n-placeholder="voiceIdPrefixPlaceholder"
                                         placeholder="Voice ID のプレフィックスを入力してください"
                                         value="personalvoice"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="voiceIdPrefixHelp">
                                         Voice ID の先頭に付けるプレフィックスを指定できます（例: myvoice, personalvoice など）。ここで設定した値を含む Voice 名が Voice List で表示されます。
                                     </p>
                                 </div>
                                 <div>
-                                    <label for="voiceFile" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label for="voiceFile" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="voiceFile">
                                         音声ファイル (WAV) *
                                     </label>
                                     <input 
@@ -259,13 +283,14 @@
                                         accept=".wav"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md"
                                     >
-                                    <p class="text-xs text-gray-500 mt-1">
+                                    <p class="text-xs text-gray-500 mt-1" data-i18n="voiceFileHelp">
                                         話者プロファイル作成用の音声ファイル（WAV形式）をアップロードしてください
                                     </p>
                                 </div>
                                 <button 
                                     id="uploadVoiceButton" 
                                     class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                                    data-i18n="uploadVoice"
                                     disabled
                                 >
                                     音声をアップロード
@@ -279,61 +304,62 @@
 
             <!-- 右側パネル: 音声合成テスト -->
             <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">音声合成テスト</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6" data-i18n="speechSynthesisTest">音声合成テスト</h2>
                 
                 <div class="space-y-6">
                     <!-- Personal Voice 選択 -->
                     <div>
-                        <label for="selectedVoice" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="selectedVoice" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="selectPersonalVoice">
                             Personal Voice を選択 *
                         </label>
                         <select 
                             id="selectedVoice" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="">-- Personal Voice を選択してください --</option>
+                            <option value="" data-i18n="selectPersonalVoicePlaceholder">-- Personal Voice を選択してください --</option>
                         </select>
                     </div>
 
                     <!-- 言語選択 -->
                     <div>
-                        <label for="selectedLanguage" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="selectedLanguage" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="selectLanguage">
                             言語を選択 *
                         </label>
                         <select 
                             id="selectedLanguage" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="ja-JP">日本語</option>
-                            <option value="en-US">英語 (米国)</option>
-                            <option value="en-GB">英語 (イギリス)</option>
-                            <option value="en-AU">英語 (オーストラリア)</option>
-                            <option value="en-NZ">英語 (ニュージーランド)</option>
-                            <option value="en-SG">英語 (シンガポール)</option>
-                            <option value="zh-CN">中国語 (標準、簡体字)</option>
-                            <option value="zh-TW">中国語 (台湾標準中国語、繁体字)</option>
-                            <option value="zh-HK">中国語 (繁体字)</option>
-                            <option value="ko-KR">韓国語</option>
-                            <option value="vi-VN">ベトナム語 (ベトナム)</option>
-                            <option value="th-TH">タイ語</option>
-                            <option value="ms-MY">マレー語 (マレーシア)</option>
-                            <option value="tr-TR">トルコ語</option>
-                            <option value="de-DE">ドイツ語</option>
-                            <option value="fr-FR">フランス語</option>
-                            <option value="es-ES">スペイン語</option>
-                            <option value="it-IT">イタリア語</option>
+                            <option value="ja-JP" data-i18n="languageJapanese">日本語</option>
+                            <option value="en-US" data-i18n="languageEnglishUS">英語 (米国)</option>
+                            <option value="en-GB" data-i18n="languageEnglishGB">英語 (イギリス)</option>
+                            <option value="en-AU" data-i18n="languageEnglishAU">英語 (オーストラリア)</option>
+                            <option value="en-NZ" data-i18n="languageEnglishNZ">英語 (ニュージーランド)</option>
+                            <option value="en-SG" data-i18n="languageEnglishSG">英語 (シンガポール)</option>
+                            <option value="zh-CN" data-i18n="languageChineseCN">中国語 (標準、簡体字)</option>
+                            <option value="zh-TW" data-i18n="languageChineseTW">中国語 (台湾標準中国語、繁体字)</option>
+                            <option value="zh-HK" data-i18n="languageChineseHK">中国語 (繁体字)</option>
+                            <option value="ko-KR" data-i18n="languageKorean">韓国語</option>
+                            <option value="vi-VN" data-i18n="languageVietnamese">ベトナム語 (ベトナム)</option>
+                            <option value="th-TH" data-i18n="languageThai">タイ語</option>
+                            <option value="ms-MY" data-i18n="languageMalay">マレー語 (マレーシア)</option>
+                            <option value="tr-TR" data-i18n="languageTurkish">トルコ語</option>
+                            <option value="de-DE" data-i18n="languageGerman">ドイツ語</option>
+                            <option value="fr-FR" data-i18n="languageFrench">フランス語</option>
+                            <option value="es-ES" data-i18n="languageSpanish">スペイン語</option>
+                            <option value="it-IT" data-i18n="languageItalian">イタリア語</option>
                         </select>
                     </div>
 
                     <!-- テキスト入力 -->
                     <div>
-                        <label for="synthesisText" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="synthesisText" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="synthesisText">
                             合成するテキスト *
                         </label>
                         <textarea 
                             id="synthesisText" 
                             rows="6"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            data-i18n-placeholder="synthesisTextPlaceholder"
                             placeholder="音声合成したいテキストを入力してください"
                         ></textarea>
                     </div>
@@ -343,6 +369,7 @@
                         <button 
                             id="synthesizeButton" 
                             class="px-6 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            data-i18n="executeSynthesis"
                         >
                             音声合成を実行
                         </button>
@@ -354,14 +381,15 @@
                     <!-- 音声プレイヤー -->
                     <div id="audioPlayerContainer" class="hidden">
                         <div class="border rounded-lg p-4 bg-gray-50">
-                            <h3 class="text-lg font-semibold text-gray-800 mb-3">合成された音声</h3>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-3" data-i18n="synthesizedAudio">合成された音声</h3>
                             <audio id="audioPlayer" controls class="w-full">
                                 <source id="audioSource" type="audio/wav">
-                                Your browser does not support the audio element.
+                                <span data-i18n="audioNotSupported">Your browser does not support the audio element.</span>
                             </audio>
                             <button 
                                 id="downloadAudioButton" 
                                 class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                data-i18n="downloadAudio"
                             >
                                 音声をダウンロード
                             </button>
@@ -378,6 +406,7 @@
     </div>
 
     <!-- JavaScript -->
+    <script src="js/i18n.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
