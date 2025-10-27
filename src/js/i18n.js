@@ -119,6 +119,9 @@ const i18n = {
         pleaseCreateProjectFirst: '先にプロジェクトを作成してください',
         pleaseCreateProjectAndConsent: '先にプロジェクトと同意書を作成してください',
         
+        // ボタンテキスト
+        selectVoice: '選択',
+        
         // ステータスメッセージ
         connecting: '接続確認中...',
         autoConnecting: '自動接続中...',
@@ -257,6 +260,9 @@ const i18n = {
         pleaseCreateProjectFirst: 'Please create a project first',
         pleaseCreateProjectAndConsent: 'Please create a project and upload consent first',
         
+        // ボタンテキスト
+        selectVoice: 'Select',
+        
         // ステータスメッセージ
         connecting: 'Connecting...',
         autoConnecting: 'Auto-connecting...',
@@ -298,6 +304,21 @@ function setLanguage(lang) {
         currentLanguage = lang;
         localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
         applyLanguage();
+        
+        // 動的に生成されたコンテンツを更新
+        if (typeof updateVoiceSelector === 'function') {
+            updateVoiceSelector();
+        }
+        // Voice リストが表示されている場合は再描画
+        const voiceList = document.getElementById('voiceList');
+        if (voiceList && voiceList.children.length > 0 && typeof voices !== 'undefined' && voices.length > 0) {
+            voiceList.innerHTML = '';
+            voices.forEach(voice => {
+                const voiceCard = createVoiceCard(voice);
+                voiceList.appendChild(voiceCard);
+            });
+        }
+        
         console.log(`言語設定完了: ${lang}`);
     } else {
         console.error(`サポートされていない言語: ${lang}`);

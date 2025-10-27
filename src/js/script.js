@@ -417,7 +417,7 @@ function createVoiceCard(voice) {
     
     const selectButton = document.createElement('button');
     selectButton.className = 'select-voice-btn px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600';
-    selectButton.textContent = '選択';
+    selectButton.textContent = t('selectVoice');
     selectButton.setAttribute('data-voice-id', voiceId);
     selectButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -455,7 +455,7 @@ function updateVoiceSelector() {
     const currentValue = selector.value;
     
     // オプションをクリア（最初のプレースホルダーは残す）
-    selector.innerHTML = '<option value="">-- Personal Voice を選択してください --</option>';
+    selector.innerHTML = `<option value="">${t('selectPersonalVoicePlaceholder')}</option>`;
     
     voices.forEach(voice => {
         const option = document.createElement('option');
