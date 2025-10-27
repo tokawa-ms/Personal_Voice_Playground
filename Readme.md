@@ -331,3 +331,343 @@ Personal Voice の一覧表示と新規作成ができます。
   <strong>🎤 Happy Voice Synthesis with Azure Personal Voice! 🤖</strong><br>
   Made with ❤️ using Azure Speech Service and GitHub Copilot
 </div>
+
+---
+
+# 🌏 English Version / 英語版
+
+---
+
+# 🎤 Azure Personal Voice Playground
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Azure](https://img.shields.io/badge/Azure-0078D4?style=flat&logo=microsoft-azure&logoColor=white)](https://azure.microsoft.com/)
+
+> **A static HTML + JavaScript application for easily testing Azure Speech Service's Personal Voice feature**
+
+## 📋 Overview
+
+Azure Personal Voice Playground is a web application that allows you to easily test Azure Speech Service's Personal Voice feature in your browser. No server setup required - runs directly from your local PC browser.
+
+## ✅ Quick Test
+You can create and test Personal Voice synthesis by simply entering your Speech Service region and access key in the connection settings at the URL below:
+
+https://tokawa-ms.github.io/Personal_Voice_Playground/src/
+
+### ✨ Key Features
+
+- 🎙️ **Personal Voice Creation** - Generate custom AI voices from audio files
+- 📋 **Voice Management** - List and select created Personal Voices
+- 🔊 **Voice Synthesis Testing** - Convert any text to speech using Personal Voice
+- 🌐 **Multilingual UI** - Support for Japanese and English UI switching
+- 🌍 **Multilingual Voice Synthesis** - Support for voice synthesis in 18 languages including Japanese, English, and Chinese
+- 💾 **Audio Download** - Save synthesized audio in MP3 format
+- 📱 **Responsive Design** - Support for PC, tablet, and smartphone
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+| Technology                               | Version   | Purpose                        |
+| ---------------------------------------- | --------- | ------------------------------ |
+| HTML5                                    | Latest    | Semantic markup                |
+| CSS3                                     | Latest    | Styling                        |
+| [Tailwind CSS](https://tailwindcss.com/) | 3.x (CDN) | Utility-first CSS framework    |
+| JavaScript                               | ES6+      | Azure API integration and interaction |
+
+### External Services
+
+- **Azure Speech Service** - Personal Voice creation and speech synthesis
+- **Azure Cognitive Services API** - Integration via REST API
+
+## 🎯 What is Personal Voice?
+
+[Azure Personal Voice](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-overview) is an AI-powered speech synthesis technology that can reproduce an individual's voice from a small amount of audio samples.
+
+### Use Cases
+- 📖 Personal audiobooks and podcasts
+- 🎥 Video content narration
+- 🤖 Personalized voice assistants
+- 🎓 Educational content vocalization
+
+## 📁 Project Structure
+
+```
+Personal_Voice_Playground/
+├── 📄 README.md                    # This file
+├── 📄 LICENSE                       # MIT License
+├── 📁 .github/
+│   └── 📄 copilot-instructions.md  # Copilot configuration
+├── 📁 src/                          # Application source
+│   ├── 📄 index.html               # Main HTML
+│   ├── 📁 css/
+│   │   └── 📄 styles.css           # Custom CSS
+│   └── 📁 js/
+│       └── 📄 script.js            # Main script
+└── 📁 docs/                         # Documentation
+    ├── 📄 specification.md         # Feature specifications
+    └── 📄 usage-guide.md           # Usage guide
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- 📌 Modern web browser (Chrome 90+, Firefox 88+, Safari 14+)
+- 📌 Azure subscription
+- 📌 Azure Speech Service resource
+
+### Azure Resource Setup
+
+1. **Access Azure Portal**
+   - Sign in to [Azure Portal](https://portal.azure.com)
+
+2. **Create Speech Service Resource**
+   ```
+   Create a resource → AI + Machine Learning → Speech
+   ```
+
+3. **Get Required Information**
+   - Subscription key (Key 1 or Key 2)
+   - Service region (e.g., eastus, westeurope)
+
+### Launch Application
+
+#### Method 1: Direct Launch from Local Files
+
+```bash
+# Clone the repository
+git clone https://github.com/tokawa-ms/Personal_Voice_Playground.git
+cd Personal_Voice_Playground
+
+# Open in browser
+open src/index.html  # Mac
+start src/index.html # Windows
+xdg-open src/index.html # Linux
+```
+
+#### Method 2: Using Local Server (Recommended)
+
+```bash
+# Using Python
+cd src
+python -m http.server 8000
+
+# Or using Node.js (npx)
+cd src
+npx http-server -p 8000
+```
+
+Open `http://localhost:8000` in your browser
+
+### How to Use
+
+1. **Connect to Azure Speech Service**
+   - Enter subscription key and region
+   - Click "Connect" button
+
+2. **Create Personal Voice (Left Panel)**
+   - Create project
+   - Upload consent audio file
+   - Upload training audio file
+
+3. **Test Voice Synthesis (Right Panel)**
+   - Select Personal Voice
+   - Select language
+   - Enter text
+   - Click "Execute Voice Synthesis"
+
+For detailed usage instructions, refer to the [Usage Guide](docs/usage-guide.md).
+
+## 📸 Screenshots
+
+### Connection Settings Screen
+Configure connection to Azure Speech Service.
+
+### Personal Voice Management Screen
+View Personal Voice list and create new voices.
+
+### Voice Synthesis Test Screen
+Convert text to speech using created Personal Voice.
+
+## 🎨 Detailed Features
+
+### 1. Azure Speech Service Connection
+- Input subscription key and region
+- Connection testing and validation
+- Collapsible UI
+
+### 2. Personal Voice Creation Flow
+1. **Project Creation**: Create new project
+2. **Consent Upload**: Upload speaker consent audio (WAV)
+3. **Audio Upload**: Upload training audio samples (WAV)
+4. **Processing Complete**: Obtain speaker profile ID
+
+### 3. Personal Voice Management
+- List created Personal Voices
+- Select and display voice information
+- List refresh functionality
+
+### 4. Multilingual UI
+- Switch between Japanese and English UI
+- Language toggle button in upper right corner
+- Language settings saved in localStorage
+- Instant switching of all page text
+- See [Multilingual UI Feature Documentation](docs/multilingual-ui-feature.md) for details
+
+### 5. Voice Synthesis
+- Personal Voice selection
+- Multilingual voice synthesis support (18 languages)
+  - Japanese
+  - English (US, UK, Australia, New Zealand, Singapore)
+  - Chinese (Simplified, Traditional Taiwan, Traditional Hong Kong)
+  - Korean
+  - Vietnamese, Thai, Malay, Turkish
+  - German, French, Spanish, Italian
+- Text input and voice synthesis
+- Audio playback and download (MP3)
+
+## 📋 Preparing Audio Files
+
+### Consent Audio
+- **Format**: WAV (16kHz, 16bit, mono recommended)
+- **Content Example**: "I consent to the use of my voice for training AI models"
+- **Length**: 5-10 seconds
+
+### Training Audio
+- **Format**: WAV (16kHz, 16bit, mono recommended)
+- **Content**: Natural speech representing speaker characteristics
+- **Length**: 30+ seconds recommended
+
+## 🔒 Security and Best Practices
+
+### API Key Handling
+
+- ✅ Enter via password field in UI
+- ✅ Keep only in memory (do not save to localStorage)
+- ❌ Hard-coding is prohibited
+- 🔐 Use only for testing and demo purposes
+
+### Data Privacy
+
+- 🔒 Audio data is sent to Azure
+- 🔒 Implement proper consent process for production use
+- 🔒 Handle personally identifiable information with care
+
+### CORS Support
+
+- Azure Speech Service allows CORS, enabling direct API calls from browser
+- Cross-origin requests work normally
+
+## 📱 Responsive Design
+
+Optimized for the following screen sizes:
+
+- 📱 **Mobile**: 320px-768px (1 column)
+- 📊 **Tablet**: 768px-1024px (2 columns)
+- 💻 **Desktop**: 1024px+ (2 columns)
+
+## 🐛 Troubleshooting
+
+### Connection Error
+```
+Error: Connection failed
+```
+**Solution**:
+- Verify subscription key
+- Enter region name in lowercase (e.g., `eastus`)
+- Confirm Azure resource is active
+
+### CORS Error
+```
+Error: CORS policy
+```
+**Solution**:
+- Use local server (`python -m http.server`)
+- Access via `http://` instead of `file://` protocol
+
+### File Upload Error
+```
+Error: File upload failed
+```
+**Solution**:
+- Use WAV format files
+- Check file size (10MB or less recommended)
+- Verify project is correctly created
+
+For details, refer to the Troubleshooting section in the [Usage Guide](docs/usage-guide.md).
+
+## 📚 Documentation
+
+- [Feature Specifications](docs/specification.md) - Detailed feature specifications and API information
+- [Usage Guide](docs/usage-guide.md) - Step-by-step usage instructions
+
+## 🔗 Related Links
+
+### Azure Personal Voice Official Documentation
+- [Personal Voice Overview](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-overview)
+- [Create Project](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-create-project)
+- [Create Consent](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-create-consent)
+- [Create Personal Voice](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-create-voice)
+- [How to Use](https://learn.microsoft.com/azure/ai-services/speech-service/personal-voice-how-to-use)
+
+### Azure Speech Service
+- [Speech Service Documentation](https://learn.microsoft.com/azure/ai-services/speech-service/)
+- [REST API Reference](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
+
+## 🤝 Contributing
+
+Contributions to the project are welcome!
+
+### How to Contribute
+
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
+
+### Improvement Ideas
+
+- 🎯 Personal Voice deletion functionality
+- 🎯 Enhanced project management features
+- 🎯 In-browser audio recording functionality
+- 🎯 Detailed voice synthesis parameter settings
+- 🎯 Batch processing functionality
+- 🎯 UI internationalization
+
+## 📄 License
+
+This project is released under the [MIT License](LICENSE).
+
+## 🆘 Support and Resources
+
+- 📖 **Documentation**: [docs/](docs/)
+- 💬 **Issue Reports**: [GitHub Issues](https://github.com/tokawa-ms/Personal_Voice_Playground/issues)
+- 🐛 **Bug Reports**: Create an issue if you find a bug
+- 💡 **Feature Requests**: Feature suggestions are also welcome
+
+## 🙏 Acknowledgments
+
+This project is built using the following technologies:
+
+- [Azure Speech Service](https://azure.microsoft.com/services/cognitive-services/speech-services/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [GitHub Copilot](https://github.com/features/copilot)
+
+## 📊 Project Statistics
+
+![GitHub stars](https://img.shields.io/github/stars/tokawa-ms/Personal_Voice_Playground?style=social)
+![GitHub forks](https://img.shields.io/github/forks/tokawa-ms/Personal_Voice_Playground?style=social)
+![GitHub issues](https://img.shields.io/github/issues/tokawa-ms/Personal_Voice_Playground)
+
+---
+
+<div align="center">
+  <strong>🎤 Happy Voice Synthesis with Azure Personal Voice! 🤖</strong><br>
+  Made with ❤️ using Azure Speech Service and GitHub Copilot
+</div>
