@@ -37,6 +37,8 @@ function generateUniqueId(prefix = '') {
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
     console.log('アプリケーションを初期化しています...');
+    loadLanguageSettings(); // 言語設定を最初に読み込む
+    applyLanguage(); // 言語を適用
     initializeEventListeners();
     loadSavedSettings();
     console.log('イベントリスナーの初期化が完了しました');
@@ -45,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
 // イベントリスナーの初期化
 function initializeEventListeners() {
     console.log('イベントリスナーを設定しています...');
+    
+    // 言語切り替え
+    document.getElementById('langJa').addEventListener('click', () => setLanguage('ja'));
+    document.getElementById('langEn').addEventListener('click', () => setLanguage('en'));
     
     // 接続パネル
     document.getElementById('connectButton').addEventListener('click', handleConnect);
@@ -127,7 +133,7 @@ async function handleConnect() {
     
     if (!subscriptionKey || !serviceRegion) {
         console.error('サブスクリプションキーまたはサービスリージョンが入力されていません');
-        showToast('サブスクリプションキーとサービスリージョンを入力してください', 'error');
+        showToast(t('pleaseEnterSubscriptionKey'), 'error');
         return;
     }
     
@@ -135,7 +141,7 @@ async function handleConnect() {
     config.serviceRegion = serviceRegion;
     
     showSpinner('connectionSpinner', true);
-    updateStatus('connectionStatus', '接続確認中...', 'info');
+    updateStatus('connectionStatus', t('connecting'), 'info');
     
     try {
         console.log(`リージョン: ${serviceRegion} に接続しています...`);
@@ -155,8 +161,8 @@ async function handleConnect() {
         if (response.ok) {
             config.isConnected = true;
             console.log('Azure Speech Service への接続に成功しました');
-            updateStatus('connectionStatus', '接続成功！', 'success');
-            showToast('Azure Speech Service に接続しました', 'success');
+            updateStatus('connectionStatus', t('connectionSuccess'), 'success');
+            showToast(t('connectedToService'), 'success');
             
             // 設定をブラウザキャッシュに保存
             saveSettings(subscriptionKey, serviceRegion);
@@ -175,8 +181,8 @@ async function handleConnect() {
     } catch (error) {
         console.error('接続エラー:', error);
         config.isConnected = false;
-        updateStatus('connectionStatus', '接続失敗', 'error');
-        showToast('接続に失敗しました。キーとリージョンを確認してください', 'error');
+        updateStatus('connectionStatus', t('connectionFailed'), 'error');
+        showToast(t('connectionError'), 'error');
     } finally {
         showSpinner('connectionSpinner', false);
     }
@@ -199,7 +205,7 @@ async function autoConnect() {
     config.serviceRegion = serviceRegion;
     
     showSpinner('connectionSpinner', true);
-    updateStatus('connectionStatus', '自動接続中...', 'info');
+    updateStatus('connectionStatus', t('autoConnecting'), 'info');
     
     try {
         console.log(`自動接続: リージョン ${serviceRegion} に接続しています...`);
@@ -219,8 +225,8 @@ async function autoConnect() {
         if (response.ok) {
             config.isConnected = true;
             console.log('自動接続: Azure Speech Service への接続に成功しました');
-            updateStatus('connectionStatus', '自動接続成功！', 'success');
-            showToast('保存された設定で自動接続しました', 'success');
+            updateStatus('connectionStatus', t('autoConnectionSuccess'), 'success');
+            showToast(t('autoConnectedWithSaved'), 'success');
             
             // メインコンテンツを表示
             setTimeout(() => {
@@ -235,8 +241,8 @@ async function autoConnect() {
     } catch (error) {
         console.error('自動接続エラー:', error);
         config.isConnected = false;
-        updateStatus('connectionStatus', '自動接続失敗 - 手動で接続してください', 'error');
-        showToast('自動接続に失敗しました。設定を確認して手動で接続してください', 'error');
+        updateStatus('connectionStatus', t('autoConnectionFailed'), 'error');
+        showToast(t('autoConnectionError'), 'error');
         // 接続パネルを展開して手動接続を促す
         expandConnectionPanel();
     } finally {
@@ -321,7 +327,7 @@ async function refreshVoiceList() {
     
     if (!config.isConnected) {
         console.warn('Speech Service に接続していません');
-        showToast('先に Azure Speech Service に接続してください', 'error');
+        showToast(t('pleaseConnect'), 'error');
         return;
     }
     
@@ -349,7 +355,7 @@ async function refreshVoiceList() {
             console.log(`${voices.length} 件の Personal Voice を取得しました`);
             
             if (voices.length === 0) {
-                voiceListContainer.innerHTML = '<p class="text-gray-500 text-center py-4">Personal Voice が見つかりません</p>';
+                voiceListContainer.innerHTML = `<p class="text-gray-500 text-center py-4">${t('noVoicesFound')}</p>`;
             } else {
                 voices.forEach(voice => {
                     const voiceCard = createVoiceCard(voice);
@@ -360,7 +366,7 @@ async function refreshVoiceList() {
                 updateVoiceSelector();
             }
             
-            showToast('Personal Voice リストを更新しました', 'success');
+            showToast(t('listRefreshed'), 'success');
         } else {
             const errorText = await response.text();
             console.error('リスト取得エラー:', errorText);
@@ -368,8 +374,8 @@ async function refreshVoiceList() {
         }
     } catch (error) {
         console.error('Personal Voice リストの取得エラー:', error);
-        voiceListContainer.innerHTML = '<p class="text-red-500 text-center py-4">リストの取得に失敗しました</p>';
-        showToast('Personal Voice リストの取得に失敗しました', 'error');
+        voiceListContainer.innerHTML = `<p class="text-red-500 text-center py-4">${t('listFetchErrorDetail')}</p>`;
+        showToast(t('listFetchError'), 'error');
     } finally {
         showSpinner('voiceListSpinner', false);
     }
@@ -411,7 +417,7 @@ function createVoiceCard(voice) {
     
     const selectButton = document.createElement('button');
     selectButton.className = 'select-voice-btn px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600';
-    selectButton.textContent = '選択';
+    selectButton.textContent = t('selectVoice');
     selectButton.setAttribute('data-voice-id', voiceId);
     selectButton.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -430,7 +436,7 @@ function selectVoiceForSynthesis(voiceId) {
     console.log(`音声合成用に Voice を選択しました: ${voiceId}`);
     const selector = document.getElementById('selectedVoice');
     selector.value = voiceId;
-    showToast('Personal Voice を選択しました', 'success');
+    showToast(t('voiceSelected'), 'success');
     
     // 右側パネルにスクロール（安全な方法で）
     const rightPanel = document.getElementById('mainContent');
@@ -449,7 +455,7 @@ function updateVoiceSelector() {
     const currentValue = selector.value;
     
     // オプションをクリア（最初のプレースホルダーは残す）
-    selector.innerHTML = '<option value="">-- Personal Voice を選択してください --</option>';
+    selector.innerHTML = `<option value="">${t('selectPersonalVoicePlaceholder')}</option>`;
     
     voices.forEach(voice => {
         const option = document.createElement('option');
@@ -479,11 +485,11 @@ async function createProject() {
     
     if (!projectName) {
         console.error('プロジェクト名が入力されていません');
-        showToast('プロジェクト名を入力してください', 'error');
+        showToast(t('pleaseEnterProjectName'), 'error');
         return;
     }
     
-    updateStatus('projectStatus', 'プロジェクトを作成中...', 'info');
+    updateStatus('projectStatus', t('creatingProject'), 'info');
     
     try {
         // 一意のプロジェクト ID を生成（カスタムプレフィックスを使用）
@@ -512,8 +518,8 @@ async function createProject() {
         if (response.ok) {
             const project = await response.json();
             console.log('プロジェクトを作成しました:', project);
-            updateStatus('projectStatus', `プロジェクト作成成功！ ID: ${currentProjectId}`, 'success');
-            showToast('プロジェクトを作成しました', 'success');
+            updateStatus('projectStatus', `${t('projectCreated')}${currentProjectId}`, 'success');
+            showToast(t('projectCreatedSuccess'), 'success');
             
             // 次のステップのボタンを有効化
             document.getElementById('uploadConsentButton').disabled = false;
@@ -525,8 +531,8 @@ async function createProject() {
     } catch (error) {
         console.error('プロジェクト作成エラー:', error);
         currentProjectId = null;
-        updateStatus('projectStatus', 'プロジェクト作成に失敗しました', 'error');
-        showToast('プロジェクトの作成に失敗しました', 'error');
+        updateStatus('projectStatus', t('projectCreateError'), 'error');
+        showToast(t('projectCreateError'), 'error');
     }
 }
 
@@ -540,29 +546,29 @@ async function uploadConsent() {
     
     if (!consentFile) {
         console.error('同意書ファイルが選択されていません');
-        showToast('同意書ファイルを選択してください', 'error');
+        showToast(t('pleaseSelectConsentFile'), 'error');
         return;
     }
     
     if (!voiceTalentName) {
         console.error('話者名が入力されていません');
-        showToast('話者名を入力してください', 'error');
+        showToast(t('pleaseEnterVoiceTalentName'), 'error');
         return;
     }
     
     if (!companyName) {
         console.error('会社名が入力されていません');
-        showToast('会社名を入力してください', 'error');
+        showToast(t('pleaseEnterCompanyName'), 'error');
         return;
     }
     
     if (!currentProjectId) {
         console.error('プロジェクトが作成されていません');
-        showToast('先にプロジェクトを作成してください', 'error');
+        showToast(t('pleaseCreateProjectFirst'), 'error');
         return;
     }
     
-    updateStatus('consentStatus', '同意書をアップロード中...', 'info');
+    updateStatus('consentStatus', t('uploadingConsent'), 'info');
     
     try {
         // 一意の同意書 ID を生成
@@ -594,8 +600,8 @@ async function uploadConsent() {
         if (response.ok) {
             const consent = await response.json();
             console.log('同意書をアップロードしました:', consent);
-            updateStatus('consentStatus', `同意書アップロード成功！ ID: ${currentConsentId}`, 'success');
-            showToast('同意書をアップロードしました', 'success');
+            updateStatus('consentStatus', `${t('consentUploaded')}ID: ${currentConsentId}`, 'success');
+            showToast(t('consentUploadedSuccess'), 'success');
             
             // 次のステップのボタンを有効化
             document.getElementById('uploadVoiceButton').disabled = false;
@@ -607,8 +613,8 @@ async function uploadConsent() {
     } catch (error) {
         console.error('同意書アップロードエラー:', error);
         currentConsentId = null;
-        updateStatus('consentStatus', '同意書アップロードに失敗しました', 'error');
-        showToast('同意書のアップロードに失敗しました', 'error');
+        updateStatus('consentStatus', t('consentUploadError'), 'error');
+        showToast(t('consentUploadError'), 'error');
     }
 }
 
@@ -622,17 +628,17 @@ async function uploadVoice() {
     
     if (!voiceFile) {
         console.error('音声ファイルが選択されていません');
-        showToast('音声ファイルを選択してください', 'error');
+        showToast(t('pleaseSelectVoiceFile'), 'error');
         return;
     }
     
     if (!currentProjectId || !currentConsentId) {
         console.error('プロジェクトまたは同意書が作成されていません');
-        showToast('先にプロジェクトと同意書を作成してください', 'error');
+        showToast(t('pleaseCreateProjectAndConsent'), 'error');
         return;
     }
     
-    updateStatus('voiceStatus', '音声をアップロード中...', 'info');
+    updateStatus('voiceStatus', t('uploadingVoice'), 'info');
     
     try {
         // 一意の Personal Voice ID を生成（カスタムプレフィックスを使用）
@@ -664,8 +670,8 @@ async function uploadVoice() {
             const personalVoice = await response.json();
             console.log('Personal Voice を作成しました:', personalVoice);
             const speakerProfileId = personalVoice.speakerProfileId || 'processing';
-            updateStatus('voiceStatus', `音声アップロード成功！Speaker Profile ID: ${speakerProfileId}`, 'success');
-            showToast('音声をアップロードしました。処理が完了するまでお待ちください', 'success');
+            updateStatus('voiceStatus', `${t('voiceUploaded')}${speakerProfileId}`, 'success');
+            showToast(t('voiceUploadedSuccess'), 'success');
             
             // リストを更新
             setTimeout(() => {
@@ -679,8 +685,8 @@ async function uploadVoice() {
     } catch (error) {
         console.error('音声アップロードエラー:', error);
         currentPersonalVoiceId = null;
-        updateStatus('voiceStatus', '音声アップロードに失敗しました', 'error');
-        showToast('音声のアップロードに失敗しました', 'error');
+        updateStatus('voiceStatus', t('voiceUploadError'), 'error');
+        showToast(t('voiceUploadError'), 'error');
     }
 }
 
@@ -694,18 +700,18 @@ async function synthesizeSpeech() {
     
     if (!selectedVoice) {
         console.error('Personal Voice が選択されていません');
-        showToast('Personal Voice を選択してください', 'error');
+        showToast(t('pleaseSelectVoice'), 'error');
         return;
     }
     
     if (!synthesisText) {
         console.error('合成するテキストが入力されていません');
-        showToast('合成するテキストを入力してください', 'error');
+        showToast(t('pleaseEnterText'), 'error');
         return;
     }
     
     showSpinner('synthesisSpinner', true);
-    updateStatus('synthesisStatus', '音声を合成中...', 'info');
+    updateStatus('synthesisStatus', t('synthesizing'), 'info');
     
     try {
         console.log(`Personal Voice (Speaker Profile ID: ${selectedVoice}) で音声合成を実行しています...`);
@@ -761,8 +767,8 @@ async function synthesizeSpeech() {
                 console.log('音声ファイルをダウンロードしました');
             };
             
-            updateStatus('synthesisStatus', '音声合成が完了しました', 'success');
-            showToast('音声合成が完了しました', 'success');
+            updateStatus('synthesisStatus', t('synthesisSuccess'), 'success');
+            showToast(t('synthesisSuccess'), 'success');
         } else {
             const errorText = await response.text();
             console.error('音声合成エラー:', errorText);
@@ -770,8 +776,8 @@ async function synthesizeSpeech() {
         }
     } catch (error) {
         console.error('音声合成エラー:', error);
-        updateStatus('synthesisStatus', '音声合成に失敗しました', 'error');
-        showToast('音声合成に失敗しました', 'error');
+        updateStatus('synthesisStatus', t('synthesisError'), 'error');
+        showToast(t('synthesisError'), 'error');
     } finally {
         showSpinner('synthesisSpinner', false);
     }
