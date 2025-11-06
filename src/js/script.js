@@ -24,7 +24,12 @@ const API_CONFIG = {
     VERSION: '2024-02-01-preview',
     AUTO_CONNECT_DELAY: 1000, // メインコンテンツ表示前の遅延時間（ミリ秒）
     DEFAULT_PROJECT_ID_PREFIX: 'project', // デフォルトのプロジェクトIDプレフィックス
-    DEFAULT_VOICE_ID_PREFIX: 'personalvoice' // デフォルトのVoice IDプレフィックス
+    DEFAULT_VOICE_ID_PREFIX: 'personalvoice', // デフォルトのVoice IDプレフィックス
+    SUPPORTED_LOCALES: [ // サポートされている言語コード
+        'ja-JP', 'en-US', 'en-GB', 'en-AU', 'en-NZ', 'en-SG',
+        'zh-CN', 'zh-TW', 'zh-HK', 'ko-KR', 'vi-VN', 'th-TH',
+        'ms-MY', 'tr-TR', 'de-DE', 'fr-FR', 'es-ES', 'it-IT'
+    ]
 };
 
 // ユニークな ID を生成するヘルパー関数
@@ -543,6 +548,7 @@ async function uploadConsent() {
     const consentFile = document.getElementById('consentFile').files[0];
     const voiceTalentName = document.getElementById('voiceTalentName').value.trim();
     const companyName = document.getElementById('companyName').value.trim();
+    const consentLocale = document.getElementById('consentLocale').value;
     
     if (!consentFile) {
         console.error('同意書ファイルが選択されていません');
@@ -562,6 +568,12 @@ async function uploadConsent() {
         return;
     }
     
+    if (!consentLocale || !API_CONFIG.SUPPORTED_LOCALES.includes(consentLocale)) {
+        console.error(`サポートされていない言語が選択されています: ${consentLocale}`);
+        showToast(t('pleaseSelectValidLocale'), 'error');
+        return;
+    }
+    
     if (!currentProjectId) {
         console.error('プロジェクトが作成されていません');
         showToast(t('pleaseCreateProjectFirst'), 'error');
@@ -574,7 +586,7 @@ async function uploadConsent() {
         // 一意の同意書 ID を生成
         currentConsentId = generateUniqueId('consent');
         console.log(`同意書ファイル "${consentFile.name}" をアップロードしています... (ID: ${currentConsentId})`);
-        console.log(`話者名: ${voiceTalentName}, 会社名: ${companyName}`);
+        console.log(`話者名: ${voiceTalentName}, 会社名: ${companyName}, 言語: ${consentLocale}`);
         
         // FormData を使用してマルチパートリクエストを構築
         const formData = new FormData();
@@ -582,7 +594,7 @@ async function uploadConsent() {
         formData.append('voiceTalentName', voiceTalentName);
         formData.append('companyName', companyName);
         formData.append('audiodata', consentFile);
-        formData.append('locale', 'ja-JP');
+        formData.append('locale', consentLocale);
         
         const response = await fetch(
             `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/consents/${currentConsentId}?api-version=${API_CONFIG.VERSION}`,
