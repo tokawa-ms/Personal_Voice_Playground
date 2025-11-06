@@ -48,6 +48,8 @@ const i18n = {
         companyName: '会社名 *',
         companyNamePlaceholder: '利用する会社名を入力してください',
         companyNameHelp: 'Personal Voiceを利用する企業名を入力してください',
+        consentLocale: '同意書の言語 *',
+        consentLocaleHelp: '同意書で読み上げた言語を選択してください。サンプル文例の言語と一致させる必要があります。',
         uploadConsent: '同意書をアップロード',
         
         step3: 'ステップ 3: 学習用音声アップロード',
@@ -191,6 +193,8 @@ const i18n = {
         companyName: 'Company Name *',
         companyNamePlaceholder: 'Enter company name',
         companyNameHelp: 'Enter the name of the company using Personal Voice',
+        consentLocale: 'Consent Language *',
+        consentLocaleHelp: 'Select the language used in the consent recording. Must match the language of the sample text.',
         uploadConsent: 'Upload Consent',
         
         step3: 'Step 3: Upload Training Audio',

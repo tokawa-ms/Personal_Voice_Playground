@@ -543,6 +543,7 @@ async function uploadConsent() {
     const consentFile = document.getElementById('consentFile').files[0];
     const voiceTalentName = document.getElementById('voiceTalentName').value.trim();
     const companyName = document.getElementById('companyName').value.trim();
+    const consentLocale = document.getElementById('consentLocale').value;
     
     if (!consentFile) {
         console.error('同意書ファイルが選択されていません');
@@ -574,7 +575,7 @@ async function uploadConsent() {
         // 一意の同意書 ID を生成
         currentConsentId = generateUniqueId('consent');
         console.log(`同意書ファイル "${consentFile.name}" をアップロードしています... (ID: ${currentConsentId})`);
-        console.log(`話者名: ${voiceTalentName}, 会社名: ${companyName}`);
+        console.log(`話者名: ${voiceTalentName}, 会社名: ${companyName}, 言語: ${consentLocale}`);
         
         // FormData を使用してマルチパートリクエストを構築
         const formData = new FormData();
@@ -582,7 +583,7 @@ async function uploadConsent() {
         formData.append('voiceTalentName', voiceTalentName);
         formData.append('companyName', companyName);
         formData.append('audiodata', consentFile);
-        formData.append('locale', 'ja-JP');
+        formData.append('locale', consentLocale);
         
         const response = await fetch(
             `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/consents/${currentConsentId}?api-version=${API_CONFIG.VERSION}`,
