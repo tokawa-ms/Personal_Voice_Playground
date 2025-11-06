@@ -48,6 +48,8 @@ const i18n = {
         companyName: '会社名 *',
         companyNamePlaceholder: '利用する会社名を入力してください',
         companyNameHelp: 'Personal Voiceを利用する企業名を入力してください',
+        consentLocale: '同意書の言語 *',
+        consentLocaleHelp: '同意書で読み上げた言語を選択してください。サンプル文例の言語と一致させる必要があります。',
         uploadConsent: '同意書をアップロード',
         
         step3: 'ステップ 3: 学習用音声アップロード',
@@ -113,6 +115,7 @@ const i18n = {
         pleaseSelectConsentFile: '同意書ファイルを選択してください',
         pleaseEnterVoiceTalentName: '話者名を入力してください',
         pleaseEnterCompanyName: '会社名を入力してください',
+        pleaseSelectValidLocale: '有効な言語を選択してください',
         pleaseUploadConsent: 'まず同意書をアップロードしてください',
         pleaseSelectVoiceFile: '音声ファイルを選択してください',
         pleaseSelectVoice: 'Personal Voice を選択してください',
@@ -191,6 +194,8 @@ const i18n = {
         companyName: 'Company Name *',
         companyNamePlaceholder: 'Enter company name',
         companyNameHelp: 'Enter the name of the company using Personal Voice',
+        consentLocale: 'Consent Language *',
+        consentLocaleHelp: 'Select the language used in the consent recording. Must match the language of the sample text.',
         uploadConsent: 'Upload Consent',
         
         step3: 'Step 3: Upload Training Audio',
@@ -256,6 +261,7 @@ const i18n = {
         pleaseSelectConsentFile: 'Please select a consent file',
         pleaseEnterVoiceTalentName: 'Please enter speaker name',
         pleaseEnterCompanyName: 'Please enter company name',
+        pleaseSelectValidLocale: 'Please select a valid language',
         pleaseUploadConsent: 'Please upload consent first',
         pleaseSelectVoiceFile: 'Please select an audio file',
         pleaseSelectVoice: 'Please select a Personal Voice',
