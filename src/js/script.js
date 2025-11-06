@@ -24,7 +24,12 @@ const API_CONFIG = {
     VERSION: '2024-02-01-preview',
     AUTO_CONNECT_DELAY: 1000, // メインコンテンツ表示前の遅延時間（ミリ秒）
     DEFAULT_PROJECT_ID_PREFIX: 'project', // デフォルトのプロジェクトIDプレフィックス
-    DEFAULT_VOICE_ID_PREFIX: 'personalvoice' // デフォルトのVoice IDプレフィックス
+    DEFAULT_VOICE_ID_PREFIX: 'personalvoice', // デフォルトのVoice IDプレフィックス
+    SUPPORTED_LOCALES: [ // サポートされている言語コード
+        'ja-JP', 'en-US', 'en-GB', 'en-AU', 'en-NZ', 'en-SG',
+        'zh-CN', 'zh-TW', 'zh-HK', 'ko-KR', 'vi-VN', 'th-TH',
+        'ms-MY', 'tr-TR', 'de-DE', 'fr-FR', 'es-ES', 'it-IT'
+    ]
 };
 
 // ユニークな ID を生成するヘルパー関数
@@ -560,6 +565,12 @@ async function uploadConsent() {
     if (!companyName) {
         console.error('会社名が入力されていません');
         showToast(t('pleaseEnterCompanyName'), 'error');
+        return;
+    }
+    
+    if (!consentLocale || !API_CONFIG.SUPPORTED_LOCALES.includes(consentLocale)) {
+        console.error(`サポートされていない言語が選択されています: ${consentLocale}`);
+        showToast(t('pleaseSelectValidLocale'), 'error');
         return;
     }
     
