@@ -371,10 +371,11 @@
                             id="selectedBaseModel" 
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="DragonLatestNeural" selected data-i18n="baseModelDragon">DragonLatestNeural</option>
-                            <option value="DragonV2.1Neural" data-i18n="baseModelDragonV2">DragonV2.1Neural</option>
-                            <option value="PhoenixLatestNeural" data-i18n="baseModelPhoenix">PhoenixLatestNeural</option>
+                            <option value="" data-i18n="loadingBaseModels">Base Models を読み込んでいます...</option>
                         </select>
+                        <p class="text-xs text-gray-500 mt-1" data-i18n="baseModelHelp">
+                            利用可能な Base Model が API から自動的に取得されます
+                        </p>
                     </div>
 
                     <!-- 言語選択 -->
