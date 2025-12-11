@@ -362,6 +362,20 @@
                         </select>
                     </div>
 
+                    <!-- ベースモデル選択 -->
+                    <div>
+                        <label for="selectedBaseModel" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="selectBaseModel">
+                            ベースモデルを選択 *
+                        </label>
+                        <select 
+                            id="selectedBaseModel" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="DragonLatestNeural" selected data-i18n="baseModelDragon">DragonLatestNeural</option>
+                            <option value="PhoenixLatestNeural" data-i18n="baseModelPhoenix">PhoenixLatestNeural</option>
+                        </select>
+                    </div>
+
                     <!-- 言語選択 -->
                     <div>
                         <label for="selectedLanguage" class="block text-sm font-medium text-gray-700 mb-2" data-i18n="selectLanguage">
