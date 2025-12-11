@@ -12,6 +12,7 @@
 
 **選択可能なベースモデル:**
 - **DragonLatestNeural** (デフォルト)
+- **DragonV2.1Neural**
 - **PhoenixLatestNeural**
 
 ### 2. 多言語対応
@@ -20,11 +21,11 @@
 
 **日本語:**
 - ラベル: `ベースモデルを選択 *`
-- オプション: `DragonLatestNeural`, `PhoenixLatestNeural`
+- オプション: `DragonLatestNeural`, `DragonV2.1Neural`, `PhoenixLatestNeural`
 
 **英語:**
 - ラベル: `Select Base Model *`
-- オプション: `DragonLatestNeural`, `PhoenixLatestNeural`
+- オプション: `DragonLatestNeural`, `DragonV2.1Neural`, `PhoenixLatestNeural`
 
 ### 3. 機能実装
 
@@ -75,6 +76,10 @@ const ssml = `
 - 高品質な音声合成を提供
 - 幅広い言語とシナリオに対応
 
+### DragonV2.1Neural
+- Dragon シリーズの改良版モデル
+- より高度な音声品質と表現力を提供
+
 ### PhoenixLatestNeural
 - 最新のニューラル音声モデル
 - より自然な音声表現が可能
@@ -92,10 +97,12 @@ const ssml = `
    - 日本語翻訳キーを追加:
      - `selectBaseModel`: "ベースモデルを選択 *"
      - `baseModelDragon`: "DragonLatestNeural"
+     - `baseModelDragonV2`: "DragonV2.1Neural"
      - `baseModelPhoenix`: "PhoenixLatestNeural"
    - 英語翻訳キーを追加:
      - `selectBaseModel`: "Select Base Model *"
      - `baseModelDragon`: "DragonLatestNeural"
+     - `baseModelDragonV2`: "DragonV2.1Neural"
      - `baseModelPhoenix`: "PhoenixLatestNeural"
 
 3. **src/js/script.js**
