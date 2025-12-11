@@ -326,7 +326,16 @@ async function fetchBaseModels() {
         
         if (response.ok) {
             const data = await response.json();
-            baseModels = Array.isArray(data) ? data : (data.value || []);
+            
+            // レスポンス構造を検証
+            if (Array.isArray(data)) {
+                baseModels = data;
+            } else if (data && typeof data === 'object' && Array.isArray(data.value)) {
+                baseModels = data.value;
+            } else {
+                console.warn('予期しないレスポンス構造です。デフォルトモデルを使用します:', data);
+                baseModels = [];
+            }
             
             // PersonalVoice 対応のモデルのみをフィルタリング
             baseModels = baseModels.filter(model => 
@@ -340,13 +349,17 @@ async function fetchBaseModels() {
         } else {
             const errorText = await response.text();
             console.error('Base Models 取得エラー:', errorText);
-            console.log('Base Models の取得に失敗しましたが、処理を継続します');
-            // エラーが発生した場合はデフォルトのモデルを使用するため、エラーメッセージは表示しない
+            console.log('Base Models の取得に失敗しましたが、デフォルトモデルを使用して処理を継続します');
+            // エラー時もセレクターを更新してデフォルトモデルを表示
+            baseModels = [];
+            updateBaseModelSelector();
         }
     } catch (error) {
         console.error('Base Models の取得エラー:', error);
-        console.log('Base Models の取得に失敗しましたが、処理を継続します');
-        // エラーが発生した場合はデフォルトのモデルを使用するため、エラーメッセージは表示しない
+        console.log('Base Models の取得に失敗しましたが、デフォルトモデルを使用して処理を継続します');
+        // エラー時もセレクターを更新してデフォルトモデルを表示
+        baseModels = [];
+        updateBaseModelSelector();
     }
 }
 
