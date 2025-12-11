@@ -12,6 +12,7 @@ let currentProjectId = null;
 let currentConsentId = null;
 let currentPersonalVoiceId = null;
 let voices = [];
+let baseModels = [];
 
 // localStorage のキー
 const STORAGE_KEYS = {
@@ -177,6 +178,7 @@ async function handleConnect() {
                 collapseConnectionPanel();
                 document.getElementById('mainContent').classList.remove('hidden');
                 // 初期データを読み込み
+                fetchBaseModels();
                 refreshVoiceList();
             }, 1000);
         } else {
@@ -237,6 +239,7 @@ async function autoConnect() {
             setTimeout(() => {
                 document.getElementById('mainContent').classList.remove('hidden');
                 // 初期データを読み込み
+                fetchBaseModels();
                 refreshVoiceList();
             }, API_CONFIG.AUTO_CONNECT_DELAY);
         } else {
@@ -295,6 +298,109 @@ function toggleConnectionPanel() {
         toggleBtn.classList.add('hidden');
     } else {
         collapseConnectionPanel();
+    }
+}
+
+// Base Models の取得
+async function fetchBaseModels() {
+    console.log('Base Models を取得しています...');
+    
+    if (!config.isConnected) {
+        console.warn('Speech Service に接続していません');
+        return;
+    }
+    
+    try {
+        console.log('Base Models API を呼び出しています...');
+        const response = await fetch(
+            `https://${config.serviceRegion}.api.cognitive.microsoft.com/customvoice/basemodels?api-version=${API_CONFIG.VERSION}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Ocp-Apim-Subscription-Key': config.subscriptionKey
+                }
+            }
+        );
+        
+        console.log(`Base Models 取得のレスポンスステータス: ${response.status}`);
+        
+        if (response.ok) {
+            const data = await response.json();
+            baseModels = Array.isArray(data) ? data : (data.value || []);
+            
+            // PersonalVoice 対応のモデルのみをフィルタリング
+            baseModels = baseModels.filter(model => 
+                model.capabilities && model.capabilities.includes('PersonalVoice')
+            );
+            
+            console.log(`${baseModels.length} 件の Personal Voice 対応 Base Model を取得しました:`, baseModels.map(m => m.name));
+            
+            // Base Model セレクターを更新
+            updateBaseModelSelector();
+        } else {
+            const errorText = await response.text();
+            console.error('Base Models 取得エラー:', errorText);
+            console.log('Base Models の取得に失敗しましたが、処理を継続します');
+            // エラーが発生した場合はデフォルトのモデルを使用するため、エラーメッセージは表示しない
+        }
+    } catch (error) {
+        console.error('Base Models の取得エラー:', error);
+        console.log('Base Models の取得に失敗しましたが、処理を継続します');
+        // エラーが発生した場合はデフォルトのモデルを使用するため、エラーメッセージは表示しない
+    }
+}
+
+// Base Model セレクターの更新
+function updateBaseModelSelector() {
+    console.log('Base Model セレクターを更新しています...');
+    const selector = document.getElementById('selectedBaseModel');
+    const currentValue = selector.value;
+    
+    // セレクターをクリア
+    selector.innerHTML = '';
+    
+    if (baseModels.length === 0) {
+        console.log('Base Models が取得できなかったため、デフォルトのオプションを使用します');
+        // デフォルトのオプションを追加
+        const defaultModels = [
+            { name: 'DragonLatestNeural', description: 'Dragon Latest Neural' },
+            { name: 'DragonV2.1Neural', description: 'Dragon V2.1 Neural' },
+            { name: 'PhoenixLatestNeural', description: 'Phoenix Latest Neural' },
+            { name: 'PhoenixV2Neural', description: 'Phoenix V2 Neural' }
+        ];
+        
+        defaultModels.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.name;
+            option.textContent = model.name;
+            selector.appendChild(option);
+        });
+        
+        // デフォルト値を設定
+        selector.value = 'DragonLatestNeural';
+        console.log('デフォルトの Base Models を設定しました');
+    } else {
+        // 取得した Base Models を追加
+        baseModels.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model.name;
+            // 説明がある場合は表示に含める
+            option.textContent = model.description ? `${model.name} - ${model.description}` : model.name;
+            selector.appendChild(option);
+        });
+        
+        // 以前の選択を復元（存在する場合）
+        if (currentValue && baseModels.some(m => m.name === currentValue)) {
+            selector.value = currentValue;
+            console.log(`以前選択されていた Base Model を復元しました: ${currentValue}`);
+        } else if (baseModels.length > 0) {
+            // デフォルト値を設定（DragonLatestNeural があればそれを、なければ最初のモデル）
+            const dragonLatest = baseModels.find(m => m.name === 'DragonLatestNeural');
+            selector.value = dragonLatest ? dragonLatest.name : baseModels[0].name;
+            console.log(`デフォルトの Base Model を設定しました: ${selector.value}`);
+        }
+        
+        console.log(`${baseModels.length} 件の Base Model をセレクターに追加しました`);
     }
 }
 
