@@ -728,7 +728,7 @@ async function synthesizeSpeech() {
     
     try {
         console.log(`Personal Voice (Speaker Profile ID: ${selectedVoice}) で音声合成を実行しています...`);
-        console.log(`ベースモデル: ${selectedBaseModel}, 言語: ${selectedLanguage}, テキスト: ${synthesisText.substring(0, 50)}...`);
+        console.log(`Base Model: ${selectedBaseModel}, Language: ${selectedLanguage}, Text: ${synthesisText.substring(0, 50)}...`);
         
         // SSML を構築 - Personal Voice には speakerProfileId と base model voice name が必要
         const ssml = `
