@@ -707,6 +707,7 @@ async function synthesizeSpeech() {
     console.log('音声合成を実行しています...');
     
     const selectedVoice = document.getElementById('selectedVoice').value;
+    const selectedBaseModel = document.getElementById('selectedBaseModel').value;
     const selectedLanguage = document.getElementById('selectedLanguage').value;
     const synthesisText = document.getElementById('synthesisText').value.trim();
     
@@ -727,12 +728,12 @@ async function synthesizeSpeech() {
     
     try {
         console.log(`Personal Voice (Speaker Profile ID: ${selectedVoice}) で音声合成を実行しています...`);
-        console.log(`言語: ${selectedLanguage}, テキスト: ${synthesisText.substring(0, 50)}...`);
+        console.log(`ベースモデル: ${selectedBaseModel}, 言語: ${selectedLanguage}, テキスト: ${synthesisText.substring(0, 50)}...`);
         
         // SSML を構築 - Personal Voice には speakerProfileId と base model voice name が必要
         const ssml = `
             <speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xml:lang="${selectedLanguage}">
-                <voice name="DragonLatestNeural">
+                <voice name="${selectedBaseModel}">
                     <mstts:ttsembedding speakerProfileId="${selectedVoice}">
                         ${synthesisText}
                     </mstts:ttsembedding>
